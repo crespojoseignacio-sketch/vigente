@@ -1,0 +1,11 @@
+{
+  "name": "vigente",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A quién escribirle hoy: consultas, ventas, cuotas y avisos para emprendedoras que venden por WhatsApp.",
+  "scripts": {
+    "build": "node scripts/build-web.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": { "node": ">=20" }
+}
