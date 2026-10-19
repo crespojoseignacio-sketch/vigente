@@ -356,6 +356,7 @@ details.mas[open] { display: grid; gap: 12px; }
 .toast span { flex: 1; }
 body.sheet-open .toast { top: calc(12px + env(safe-area-inset-top, 0)); bottom: auto; }
 .toast-btn { flex: none; min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1.5px solid currentColor; background: transparent; color: var(--saffron); font-weight: 700; cursor: pointer; }
+@media (prefers-color-scheme: dark) { .toast-btn { color: inherit; } }
 
 @media (min-width: 640px) {
   .titulo { font-size: 38px; }
