@@ -1,5 +1,7 @@
 # Vigente
 
+**https://vigente-taupe.vercel.app**
+
 **A quién escribirle hoy, y qué decirle.** Para emprendedoras que venden por WhatsApp (empezó con Naty, que vende piezas de cocina de venta directa): anotan cada consulta y cada venta en segundos, y la app les arma la lista del día con el mensaje listo para mandar desde su WhatsApp.
 
 1. **Hoy:** a quién escribirle y por qué. El seguimiento de una consulta que no compró, la postventa, la mitad de las cuotas («va por la cuota 6 de 12»), cuando termina de pagar, el cumple y a quien hace meses que no le habla. Un botón abre WhatsApp con el mensaje escrito; se puede posponer o descartar.

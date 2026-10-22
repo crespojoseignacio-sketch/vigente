@@ -255,7 +255,7 @@ function vistaHoy() {
     <p class="fecha">${fecha}</p>
     <h1 class="titulo">${esc(titulo)}</h1>
     ${nuevo ? bienvenida() : ""}
-    ${activos.length ? `<div class="avisos">${activos.map(avisoCard).join("")}</div>`
+    ${activos.length ? `<div class="avisos">${activos.map(a => avisoCard(a)).join("")}</div>`
       : nuevo ? "" : `<p class="lead">Nadie consultó hace poco ni está por la mitad de las cuotas. Buen momento para anotar consultas o mandar una promo.</p>
         <div class="fila-btns"><button class="btn" data-act="anotar">Anotar</button><a class="btn" href="#/promos">Armar una promo</a></div>`}
     ${proximos.length ? `<details class="bloque"><summary>Próximos 7 días <span class="cuenta">${proximos.length}</span></summary>
