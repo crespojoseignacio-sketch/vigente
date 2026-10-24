@@ -35,6 +35,9 @@ const TEMAS = [
   ["cuaderno", "Cuaderno", "Hoja con renglones, letra más grande y un círculo para tachar a quien ya le escribiste."],
 ];
 const TEMA_DEF = "recetario";
+// Estilos que tienen ilustración (hecha con la IA local de imágenes). Los demás no piden el archivo.
+const CON_ILUSTRA = new Set(["etiquetas", "cuaderno"]);
+const ilustra = () => { const t = document.documentElement.dataset.tema; return CON_ILUSTRA.has(t) ? `<img class="ilustra" src="/ilustra/${esc(t)}.webp" alt="" width="640" height="400" decoding="async" data-ilustra>` : ""; };
 const COLOR_TEMA = { recetario: "#2A1F2D", etiquetas: "#15233F", cuaderno: "#1E2A55" };
 function temaGuardado() { try { const t = localStorage.getItem("vigente.tema"); return TEMAS.some(x => x[0] === t) ? t : TEMA_DEF; } catch (e) { return TEMA_DEF; } }
 function aplicarTema(t) {
@@ -230,7 +233,7 @@ function vistaLogin() {
     <div class="brand">${logo(40)}<b>Vigente</b></div>
     <h1>A quién escribirle hoy, y qué decirle.</h1>
     <p class="lead">Anotás cada consulta y cada venta en segundos. Vigente te avisa cuándo volver a escribirle a cada persona: el seguimiento, la mitad de las cuotas, el cumple. El mensaje sale escrito, desde tu WhatsApp.</p>
-    <img class="ilustra" src="/ilustra/${esc(document.documentElement.dataset.tema)}.webp" alt="" width="640" height="400" decoding="async" data-ilustra>
+    ${ilustra()}
     <div class="muestra" aria-hidden="true">
       ${perilla({ ...muestra, centro: "6" }, 52)}<span class="inicial i-cuota">MG</span><span class="tilde"></span>
       <div><span class="etiqueta e-cuota">Cuotas</span><b>Marta Gómez</b><span>Va por la cuota 6 de 12</span>${segmentos(6, 12)}<em>«¡Hola Marta! ¿Qué tal la cacerola?…»</em></div>
@@ -300,7 +303,7 @@ function cuando(desde, h) {
 }
 function bienvenida() {
   return `<div class="bienvenida">
-    <img class="ilustra" src="/ilustra/${esc(document.documentElement.dataset.tema)}.webp" alt="" width="640" height="400" decoding="async" data-ilustra>
+    ${ilustra()}
     <p class="lead">Cada vez que te consulten o te compren, anotalo acá. Con eso Vigente arma la lista de a quién escribirle cada día.</p>
     <button class="paso" data-act="nueva-consulta"><b>Me consultaron</b><span>Nombre, teléfono y qué le interesó. Veinte segundos.</span></button>
     <button class="paso" data-act="nueva-venta"><b>Vendí</b><span>También las ventas viejas del cuaderno, con su fecha y sus cuotas.</span></button>
