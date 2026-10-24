@@ -28,6 +28,29 @@ const hoy = () => hoyISO();
 const cliente = id => st() && st().clientes.find(c => c.id === id);
 const lower = s => sinTildes(String(s || "").trim());
 const ORIGEN_DEF = "Otro";
+// Estilos de la app: cada emprendedora elige el suyo en Ajustes (queda en ese celular).
+const TEMAS = [
+  ["recetario", "Recetario", "Letra de libro de cocina, una tarjeta por persona y la perilla de las cuotas."],
+  ["etiquetas", "Etiquetas", "Como las etiquetas de WhatsApp: un color por aviso y una lista que entra más gente."],
+  ["cuaderno", "Cuaderno", "Hoja con renglones, letra más grande y un círculo para tachar a quien ya le escribiste."],
+];
+const TEMA_DEF = "recetario";
+const COLOR_TEMA = { recetario: "#2A1F2D", etiquetas: "#15233F", cuaderno: "#1E2A55" };
+function temaGuardado() { try { const t = localStorage.getItem("vigente.tema"); return TEMAS.some(x => x[0] === t) ? t : TEMA_DEF; } catch (e) { return TEMA_DEF; } }
+function aplicarTema(t) {
+  document.documentElement.dataset.tema = t;
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute("content", COLOR_TEMA[t] || COLOR_TEMA[TEMA_DEF]);
+}
+aplicarTema(temaGuardado());
+// Cómo se llama cada aviso, como una etiqueta de WhatsApp Business.
+const ETIQUETA = { cumple: "Cumple", seg: "Seguimiento", volver: "Volver a ofrecer", post: "Postventa", cuota: "Cuotas", fin: "Terminó de pagar", quieto: "Sin contacto" };
+const iniciales = n => String(n || "").trim().split(/\s+/).slice(0, 2).map(w => w.charAt(0).toLocaleUpperCase("es")).join("") || "·";
+// Las cuotas como casilleros (Etiquetas y Cuaderno); en Recetario se ve la perilla.
+function segmentos(k, n) {
+  if (!(n >= 2)) return "";
+  return `<span class="segmentos" role="img" aria-label="Cuota ${k} de ${n}">${Array.from({ length: Math.min(n, 36) }, (_, i) => `<i class="${i < k ? "si" : ""}"></i>`).join("")}</span>`;
+}
 
 const I = (d, extra = "") => `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" ${extra}>${d}</svg>`;
 const ICON = {
@@ -92,7 +115,7 @@ function perillaCliente(c, s, size) {
   return perilla({ tipo: "persona" }, size);
 }
 function logo(size = 36) {
-  return `<svg class="logo" viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#2A1F2D"/><g transform="rotate(-90 32 32)"><circle cx="32" cy="32" r="19" fill="none" stroke="#5a4a5e" stroke-width="7" stroke-dasharray="7.9 2.05"/><circle cx="32" cy="32" r="19" fill="none" stroke="#E9A23B" stroke-width="7" stroke-dasharray="7.9 2.05 7.9 2.05 7.9 2.05 7.9 2.05 7.9 2.05 7.9 2.05 0 200"/></g><circle cx="32" cy="32" r="8" fill="#F6F1EA"/></svg>`;
+  return `<svg class="logo" viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden="true"><rect class="lg-bg" width="64" height="64" rx="16"/><g transform="rotate(-90 32 32)"><circle class="lg-track" cx="32" cy="32" r="19" fill="none" stroke-width="7" stroke-dasharray="7.9 2.05"/><circle class="lg-fill" cx="32" cy="32" r="19" fill="none" stroke-width="7" stroke-dasharray="7.9 2.05 7.9 2.05 7.9 2.05 7.9 2.05 7.9 2.05 7.9 2.05 0 200"/></g><circle class="lg-dot" cx="32" cy="32" r="8"/></svg>`;
 }
 
 // ---------- avisos ----------
@@ -207,9 +230,10 @@ function vistaLogin() {
     <div class="brand">${logo(40)}<b>Vigente</b></div>
     <h1>A quién escribirle hoy, y qué decirle.</h1>
     <p class="lead">Anotás cada consulta y cada venta en segundos. Vigente te avisa cuándo volver a escribirle a cada persona: el seguimiento, la mitad de las cuotas, el cumple. El mensaje sale escrito, desde tu WhatsApp.</p>
+    <img class="ilustra" src="/ilustra/${esc(document.documentElement.dataset.tema)}.webp" alt="" width="640" height="400" decoding="async" data-ilustra>
     <div class="muestra" aria-hidden="true">
-      ${perilla({ ...muestra, centro: "6" }, 52)}
-      <div><b>Marta Gómez</b><span>Va por la cuota 6 de 12</span><em>«¡Hola Marta! ¿Qué tal la cacerola?…»</em></div>
+      ${perilla({ ...muestra, centro: "6" }, 52)}<span class="inicial i-cuota">MG</span><span class="tilde"></span>
+      <div><span class="etiqueta e-cuota">Cuotas</span><b>Marta Gómez</b><span>Va por la cuota 6 de 12</span>${segmentos(6, 12)}<em>«¡Hola Marta! ¿Qué tal la cacerola?…»</em></div>
     </div>
     <form class="card form" data-form="login" novalidate>
       <div class="seg" role="tablist" aria-label="Entrar o crear cuenta">
@@ -254,8 +278,11 @@ function vistaHoy() {
     </header>
     <p class="fecha">${fecha}</p>
     <h1 class="titulo">${esc(titulo)}</h1>
+    ${!leerFlag("tema-elegido") ? `<section class="bloque elegir-estilo"><h2 class="sub">¿Cómo querés verla?</h2><p class="hint">Hay tres estilos. Lo podés cambiar cuando quieras en Ajustes.</p>
+      ${opcionesEstilo()}<button class="btn ghost big" data-act="tema-ok">Así está bien</button></section>` : ""}
     ${nuevo ? bienvenida() : ""}
-    ${activos.length ? `<div class="avisos">${activos.map(a => avisoCard(a)).join("")}</div>`
+    ${activos.length ? `<div class="avisos">${activos.map((a, i) => (i === 0 || activos[i - 1].tipo !== a.tipo
+      ? `<h2 class="grupo g-${a.tipo}">${esc(ETIQUETA[a.tipo])} <span>${activos.filter(x => x.tipo === a.tipo).length}</span></h2>` : "") + avisoCard(a)).join("")}</div>`
       : nuevo ? "" : `<p class="lead">Nadie consultó hace poco ni está por la mitad de las cuotas. Buen momento para anotar consultas o mandar una promo.</p>
         <div class="fila-btns"><button class="btn" data-act="anotar">Anotar</button><a class="btn" href="#/promos">Armar una promo</a></div>`}
     ${proximos.length ? `<details class="bloque"><summary>Próximos 7 días <span class="cuenta">${proximos.length}</span></summary>
@@ -273,6 +300,7 @@ function cuando(desde, h) {
 }
 function bienvenida() {
   return `<div class="bienvenida">
+    <img class="ilustra" src="/ilustra/${esc(document.documentElement.dataset.tema)}.webp" alt="" width="640" height="400" decoding="async" data-ilustra>
     <p class="lead">Cada vez que te consulten o te compren, anotalo acá. Con eso Vigente arma la lista de a quién escribirle cada día.</p>
     <button class="paso" data-act="nueva-consulta"><b>Me consultaron</b><span>Nombre, teléfono y qué le interesó. Veinte segundos.</span></button>
     <button class="paso" data-act="nueva-venta"><b>Vendí</b><span>También las ventas viejas del cuaderno, con su fecha y sus cuotas.</span></button>
@@ -284,11 +312,14 @@ function avisoCard(a, compacto = false) {
     ? `<a class="btn wa big" href="${esc(linkWa(a.telefono, a.mensaje))}" target="_blank" rel="noopener noreferrer" data-act="escribir" data-clave="${esc(a.clave)}" data-id="${esc(a.clienteId)}">${ICON.chat}<span>Escribirle</span></a>`
     : `<button class="btn big" data-act="editar" data-id="${esc(a.clienteId)}">Agregar su teléfono</button>`;
   return `<article class="aviso t-${a.tipo}${compacto ? " compacto" : ""}">
-    <div class="aviso-top">${compacto ? "" : perillaAviso(a)}
+    ${a.telefono ? `<button class="tilde" data-act="ya-escribi" data-clave="${esc(a.clave)}" data-id="${esc(a.clienteId)}" aria-label="Ya le escribí a ${esc(primerNombre(a.nombre))}"></button>` : ""}
+    <div class="aviso-top">${compacto ? "" : perillaAviso(a) + `<span class="inicial i-${a.tipo}" aria-hidden="true">${esc(iniciales(a.nombre))}</span>`}
       <div class="aviso-main">
+        <span class="etiqueta e-${a.tipo}">${esc(ETIQUETA[a.tipo] || "")}</span>
         ${compacto ? `<p class="aviso-hoy">Para escribirle hoy</p>` : `<h2><button class="nombre" data-act="ficha" data-id="${esc(a.clienteId)}">${esc(a.nombre)}</button></h2>`}
         <p class="motivo">${esc(a.titulo)}</p>
-        ${a.producto || a.detalle ? `<p class="detalle">${a.producto ? `<span class="chip quieto">${esc(a.producto)}</span>` : ""}${esc(a.detalle)}</p>` : ""}
+        ${a.tipo === "cuota" || a.tipo === "fin" ? segmentos(a.k, a.n) : ""}
+        ${a.producto || a.detalle ? `<p class="detalle">${a.producto ? `<span class="chip quieto">${esc(a.producto)}</span>` : ""}<span class="det-txt">${esc(a.detalle)}</span></p>` : ""}
       </div>
     </div>
     <p class="msg">${esc(a.mensaje)}</p>
@@ -342,7 +373,7 @@ function vistaClientes() {
       <div class="fila-btns"><button class="btn primary" data-act="nueva-consulta">Me consultaron</button><a class="btn" href="#/importar">Importar contactos</a></div></section>`}`;
 }
 function clienteRow({ c, s }) {
-  return `<li><a class="cli" href="#/c/${esc(encodeURIComponent(c.id))}">${perillaCliente(c, s, 44)}
+  return `<li><a class="cli" href="#/c/${esc(encodeURIComponent(c.id))}">${perillaCliente(c, s, 44)}<span class="inicial i-${s.estado}" aria-hidden="true">${esc(iniciales(c.nombre))}</span>
     <span class="cli-txt"><b>${esc(c.nombre)}</b><span>${esc(s.texto)}</span>
     ${(c.intereses || []).length ? `<span class="cli-chips">${c.intereses.slice(0, 3).map(i => `<span class="chip quieto">${esc(i)}</span>`).join("")}</span>` : ""}</span>
     ${c.sinPromos ? `<span class="tag-no" title="No ofrecerle más">No ofrecer</span>` : ""}</a></li>`;
@@ -359,8 +390,9 @@ function vistaFicha() {
   const saludo = llenar("¡Hola {nombre}!", { nombre: primerNombre(c.nombre) });
   return `<header class="top"><a class="icon-btn" href="#/clientes" aria-label="Volver a clientes">${ICON.atras}</a>
       <button class="btn small" data-act="editar" data-id="${esc(c.id)}">${ICON.editar}<span>Editar</span></button></header>
-    <section class="ficha-head">${perillaCliente(c, s, 72)}
-      <div><h1 class="titulo">${esc(c.nombre)}</h1><p class="sit">${esc(s.texto)}${s.venta && s.venta.cuotas >= 2 && s.estado === "cuotas" ? ", aprox." : ""}</p></div></section>
+    <section class="ficha-head">${perillaCliente(c, s, 72)}<span class="inicial grande i-${s.estado}" aria-hidden="true">${esc(iniciales(c.nombre))}</span>
+      <div><h1 class="titulo">${esc(c.nombre)}</h1><p class="sit">${esc(s.texto)}${s.venta && s.venta.cuotas >= 2 && s.estado === "cuotas" ? ", aprox." : ""}</p>
+      ${s.estado === "cuotas" ? segmentos(cuotaActual(s.venta, h), s.venta.cuotas) : ""}</div></section>
     ${c.telefono ? `<div class="fila-btns contacto">
       <a class="btn wa" href="${esc(linkWa(c.telefono, saludo))}" target="_blank" rel="noopener noreferrer" data-act="escribir-libre" data-id="${esc(c.id)}">${ICON.chat}<span>WhatsApp</span></a>
       <a class="btn" href="tel:+${esc(c.telefono)}">${ICON.tel}<span>Llamar</span></a></div>
@@ -735,6 +767,8 @@ function vistaAjustes() {
       <p class="hint">Con 11, «15 2345-6789» queda como +54 9 11 2345-6789.</p></section>
     <button class="btn primary big" type="submit">Guardar ajustes</button>
   </form>
+  <section class="bloque estilos"><h2 class="sub">Estilo de la app</h2><p class="hint">Queda guardado en este celular. Cambia cómo se ve, no lo que tenés cargado.</p>
+    ${opcionesEstilo()}</section>
   <section class="bloque"><h2 class="sub">Tus datos</h2><p class="hint">Bajalos cada tanto: es tu copia, y se abren con Excel o Google Sheets.</p>
     <div class="fila-btns"><button class="btn" data-act="bajar-clientes">${ICON.bajar}<span>Clientes</span></button><button class="btn" data-act="bajar-movs">${ICON.bajar}<span>Historial completo</span></button></div></section>
   ${S.install ? `<section class="bloque"><h2 class="sub">En el celular</h2><button class="btn" data-act="instalar">Instalar Vigente</button></section>` : ""}
@@ -745,6 +779,12 @@ function vistaAjustes() {
       <button class="opt" data-act="privacidad">Cómo se cuidan los datos</button>
       <button class="opt peligro" data-act="borrar-todo">Borrar todos mis datos de Vigente</button>
     </div></section>`;
+}
+function opcionesEstilo() {
+  const actual = document.documentElement.dataset.tema;
+  return `<div class="estilos-op" role="radiogroup" aria-label="Estilo de la app">${TEMAS.map(([k, t, d]) => `<button class="estilo-op${actual === k ? " on" : ""}" role="radio" aria-checked="${actual === k}" data-act="tema" data-t="${k}">
+    <span class="estilo-muestra" data-tema="${k}" aria-hidden="true"><span class="em-titulo">Hoy</span><span class="em-fila"><span class="em-tag"></span><span class="em-linea"></span></span><span class="em-fila"><span class="em-tag b"></span><span class="em-linea"></span></span><span class="em-boton"></span></span>
+    <span class="estilo-txt"><b>${t}</b><span>${d}</span></span></button>`).join("")}</div>`;
 }
 function bajar(nombre, texto) {
   const url = URL.createObjectURL(new Blob([texto], { type: "text/csv;charset=utf-8" }));
@@ -890,6 +930,15 @@ const ACT = {
     ajustesSucios = true;
   },
   "aj-original": () => { for (const [k] of NOMBRES_PLANTILLA) { const t = document.querySelector(`[name="pl-${k}"]`); if (t) t.value = DEFAULTS.plantillas[k]; } toast("Puse los originales. Tocá Guardar ajustes."); },
+  "tema-ok": () => { ponerFlag("tema-elegido"); render(); },
+  tema: el => {
+    const t = el.dataset.t;
+    ponerFlag("tema-elegido");
+    try { localStorage.setItem("vigente.tema", t); } catch (e) { /* sin almacenamiento: dura hasta cerrar */ }
+    aplicarTema(t);
+    render();
+    toast(`Estilo ${TEMAS.find(x => x[0] === t)[1]}.`);
+  },
   "bajar-clientes": () => bajar(`vigente-clientes-${hoy()}.csv`, csvClientes(st(), hoy())),
   "bajar-movs": () => bajar(`vigente-historial-${hoy()}.csv`, csvMovimientos(st())),
   instalar: async () => { const p = S.install; if (!p) return; S.install = null; p.prompt(); try { await p.userChoice; } catch (e) { /* nada */ } render(); },
@@ -1011,6 +1060,8 @@ document.addEventListener("change", e => {
     }).catch(() => toast("No pude leer ese archivo."));
   }
 });
+// Si un estilo todavía no tiene ilustración, la imagen se oculta (sin atributos onerror: la CSP no los deja).
+document.addEventListener("error", e => { const t = e.target; if (t && t.matches && t.matches("img[data-ilustra]")) t.hidden = true; }, true);
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); S.install = e; if (S.route === "hoy" || S.route === "ajustes") render(); });
 window.addEventListener("beforeunload", e => { if (ajustesSucios && S.route === "ajustes") { e.preventDefault(); e.returnValue = ""; } });
 

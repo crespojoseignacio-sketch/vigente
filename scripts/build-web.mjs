@@ -25,7 +25,7 @@ const js = [
   read('src/store.js'),
   read('src/app.js'),
 ].join('\n;\n');
-const css = read('src/styles.css');
+const css = read('src/styles.css') + '\n' + read('src/temas.css');
 const jsName = `assets/app.${hash(js)}.js`;
 const cssName = `assets/app.${hash(css)}.css`;
 

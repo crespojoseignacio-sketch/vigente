@@ -10,7 +10,7 @@
 4. **Promos:** elegir a quiénes (por producto, si compró, cuotas en curso, sin promo en los últimos días), escribir el mensaje una vez y mandarlo de a uno desde el propio número.
 5. **Importar contactos:** de la agenda (Chrome en Android) o de un archivo .vcf/.csv. Si el contacto se llama «Laura bifera», sugiere el interés «Bifera».
 6. **Números del mes:** consultas, ventas, cuotas y de dónde vienen las ventas.
-7. **Ajustes:** productos, orígenes, días de cada aviso, textos de los mensajes, característica telefónica, descargar los datos, borrar todo.
+7. **Ajustes:** productos, orígenes, días de cada aviso, textos de los mensajes, característica telefónica, **estilo de la app** (Recetario, Etiquetas o Cuaderno), descargar los datos, borrar todo.
 
 Por qué está hecha así: `docs/decisiones.md`.
 
@@ -44,7 +44,9 @@ Importar el repositorio. `vercel.json` ya trae la configuración (sin instalar n
 | `src/logic.js` | Reglas sin pantallas: avisos (cuotas, seguimiento, postventa, cumple…), teléfonos argentinos, plantillas, promos, números del mes, leer .vcf y .csv, armar el .csv para descargar. Se prueba con `node --test`. |
 | `src/store.js` | La cuenta (Supabase Auth) y las funciones `vg_`. El ejemplo («Probar con un ejemplo») guarda todo en el navegador. |
 | `src/app.js` | Pantallas (JavaScript sin frameworks). |
-| `src/styles.css` | Estilos, con modo oscuro. |
+| `src/styles.css` | Estilos base (Recetario), con modo oscuro. |
+| `src/temas.css` | Los otros dos estilos (Etiquetas y Cuaderno) y las muestras de Ajustes. |
+| `static/ilustra/` | Ilustraciones de cada estilo, generadas con la IA local (KoboldCpp). |
 | `supabase/vigente.sql` | Tablas, permisos y funciones. |
 | `scripts/build-web.mjs` | Arma `dist/` para Vercel (`--demo`: sin base). |
 | `scripts/brand/render.mjs` | Genera los íconos y `og.png`. |

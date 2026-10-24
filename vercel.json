@@ -4,7 +4,7 @@
   "installCommand": "",
   "buildCommand": "node scripts/build-web.mjs",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/((?!assets/|icons/|sw.js|manifest.webmanifest|og.png|robots.txt).*)", "destination": "/index.html" }],
+  "rewrites": [{ "source": "/((?!assets/|icons/|ilustra/|sw.js|manifest.webmanifest|og.png|robots.txt).*)", "destination": "/index.html" }],
   "headers": [
     {
       "source": "/(.*)",

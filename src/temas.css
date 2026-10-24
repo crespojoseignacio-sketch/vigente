@@ -1,0 +1,284 @@
+/* ---------- Estilos de la app ----------
+   Recetario: lo de styles.css (azulejo, tinta berenjena, perilla de cuotas, Young Serif).
+   Etiquetas: como las etiquetas de WhatsApp Business. Un color por aviso, lista densa, letra Gabarito + Instrument Sans.
+   Cuaderno: hoja con renglones y margen, letra grande, nombres a mano (Kalam), texto de libro (Literata), resaltador.
+   Cada estilo cambia letra, forma y densidad, no solo colores. Las variables van en [data-tema] para que las muestras
+   de Ajustes también las tomen. */
+
+/* Piezas que solo usan algunos estilos */
+.inicial, .etiqueta, .tilde, .segmentos, .grupo { display: none; }
+.ilustra { display: block; width: 100%; height: auto; border-radius: var(--r-card); margin: 0 0 18px; background: var(--chip); }
+
+/* Muestras de cada estilo en Ajustes */
+.estilos-op { display: grid; gap: 10px; }
+.estilo-op { display: flex; gap: 14px; align-items: center; text-align: left; padding: 10px; border-radius: var(--r-card); border: 2px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
+.estilo-op.on { border-color: var(--ink); }
+.estilo-txt b { display: block; font-size: 17px; }
+.estilo-txt span { display: block; color: var(--muted); font-size: 14px; line-height: 1.35; }
+.estilo-muestra { flex: none; width: 92px; height: 76px; border-radius: 10px; padding: 8px; background: var(--bg); border: 1px solid var(--line); display: grid; gap: 5px; align-content: start; overflow: hidden; color: var(--ink); }
+.em-titulo { font: 400 15px/1 var(--serif); }
+.em-fila { display: flex; gap: 4px; align-items: center; }
+.em-tag { width: 16px; height: 9px; border-radius: 3px; background: var(--saffron); }
+.em-tag.b { background: var(--basil); }
+.em-linea { flex: 1; height: 5px; border-radius: 3px; background: var(--track); }
+.em-boton { height: 12px; border-radius: 4px; background: var(--basil); margin-top: 2px; }
+
+/* ================= Etiquetas ================= */
+[data-tema="etiquetas"] {
+  --bg: #f3f5f8; --paper: #ffffff; --ink: #15233f; --muted: #586378; --line: #dadfe7;
+  --basil: #11795a; --basil-2: #0d6247; --on-basil: #ffffff; --saffron: #e9b20e; --saffron-soft: #fcefc4;
+  --track: #dadfe7; --chip: #ecf0f5; --focus: #2f8fd8; --danger: #b4232f;
+  --r-card: 14px; --r-ctl: 10px;
+  --serif: "Gabarito", system-ui, sans-serif; --sans: "Instrument Sans", system-ui, sans-serif;
+  /* color de cada etiqueta: fondo, texto y raya */
+  --seg-bg: #dceefc; --seg-tx: #0b4f80; --seg: #2f8fd8;
+  --volver-bg: #ece6fa; --volver-tx: #4b2e91; --volver: #7c5cc4;
+  --post-bg: #ddf3e6; --post-tx: #1d6b3f; --post: #2e9e5b;
+  --cuota-bg: #fcefc4; --cuota-tx: #6e4e00; --cuota: #e9b20e;
+  --fin-bg: #fde3cc; --fin-tx: #8a3f00; --fin: #e77b1c;
+  --quieto-bg: #e7eaee; --quieto-tx: #3d4654; --quieto: #8d97a5;
+  --cumple-bg: #fbe0ec; --cumple-tx: #8c1d50; --cumple: #d9478a;
+}
+.estilo-muestra[data-tema="etiquetas"] .em-tag { background: var(--cuota); }
+.estilo-muestra[data-tema="etiquetas"] .em-tag.b { background: var(--seg); }
+.estilo-muestra[data-tema="etiquetas"] .em-titulo { font-weight: 800; }
+
+[data-tema="etiquetas"] .perilla { display: none; }
+[data-tema="etiquetas"] .inicial {
+  display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 50%;
+  font: 700 16px/1 var(--serif); background: var(--chip); color: var(--ink);
+}
+[data-tema="etiquetas"] .inicial.grande { width: 68px; height: 68px; font-size: 26px; }
+[data-tema="etiquetas"] .i-seg, [data-tema="etiquetas"] .i-consulto { background: var(--seg-bg); color: var(--seg-tx); }
+[data-tema="etiquetas"] .i-volver { background: var(--volver-bg); color: var(--volver-tx); }
+[data-tema="etiquetas"] .i-post, [data-tema="etiquetas"] .i-compro { background: var(--post-bg); color: var(--post-tx); }
+[data-tema="etiquetas"] .i-cuota, [data-tema="etiquetas"] .i-cuotas { background: var(--cuota-bg); color: var(--cuota-tx); }
+[data-tema="etiquetas"] .i-fin { background: var(--fin-bg); color: var(--fin-tx); }
+[data-tema="etiquetas"] .i-quieto, [data-tema="etiquetas"] .i-contacto { background: var(--quieto-bg); color: var(--quieto-tx); }
+[data-tema="etiquetas"] .i-cumple { background: var(--cumple-bg); color: var(--cumple-tx); }
+
+/* la etiqueta con forma de etiqueta: punta y agujerito */
+[data-tema="etiquetas"] .etiqueta {
+  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 14px 0 9px; margin-bottom: 4px;
+  font: 700 13px/1 var(--sans); background: var(--quieto-bg); color: var(--quieto-tx);
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 50%, calc(100% - 9px) 100%, 0 100%); border-radius: 4px 0 0 4px;
+}
+[data-tema="etiquetas"] .etiqueta::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .55; }
+[data-tema="etiquetas"] .e-seg { background: var(--seg-bg); color: var(--seg-tx); }
+[data-tema="etiquetas"] .e-volver { background: var(--volver-bg); color: var(--volver-tx); }
+[data-tema="etiquetas"] .e-post { background: var(--post-bg); color: var(--post-tx); }
+[data-tema="etiquetas"] .e-cuota { background: var(--cuota-bg); color: var(--cuota-tx); }
+[data-tema="etiquetas"] .e-fin { background: var(--fin-bg); color: var(--fin-tx); }
+[data-tema="etiquetas"] .e-cumple { background: var(--cumple-bg); color: var(--cumple-tx); }
+
+[data-tema="etiquetas"] .brand b { font: 800 23px/1 var(--serif); letter-spacing: -.02em; }
+[data-tema="etiquetas"] .titulo { font: 800 30px/1.08 var(--serif); letter-spacing: -.025em; }
+[data-tema="etiquetas"] .titulo.chico { font-size: 26px; }
+[data-tema="etiquetas"] .login h1 { font: 800 40px/1.02 var(--serif); letter-spacing: -.03em; }
+[data-tema="etiquetas"] .sub, [data-tema="etiquetas"] .panel > h2, [data-tema="etiquetas"] .form h2,
+[data-tema="etiquetas"] .quien, [data-tema="etiquetas"] .vacio h1 { font-family: var(--serif); font-weight: 800; letter-spacing: -.015em; }
+[data-tema="etiquetas"] .paso b, [data-tema="etiquetas"] .muestra b, [data-tema="etiquetas"] .mov-prod { font-family: var(--serif); font-weight: 700; }
+[data-tema="etiquetas"] .nums dd { font-family: var(--serif); font-weight: 800; }
+
+/* Hoy: una hoja con renglones agrupados por etiqueta, en vez de tarjetas */
+[data-tema="etiquetas"] .avisos { display: block; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card); padding: 2px 14px 4px; }
+[data-tema="etiquetas"] .grupo { display: flex; align-items: center; gap: 8px; margin: 14px 0 2px; font: 700 15px/1.2 var(--sans); color: var(--muted); }
+[data-tema="etiquetas"] .grupo::before { content: ""; width: 10px; height: 10px; border-radius: 3px; background: var(--quieto); }
+[data-tema="etiquetas"] .grupo span { font-weight: 600; background: var(--chip); border-radius: 999px; padding: 2px 8px; font-size: 13px; }
+[data-tema="etiquetas"] .g-seg::before { background: var(--seg); }
+[data-tema="etiquetas"] .g-volver::before { background: var(--volver); }
+[data-tema="etiquetas"] .g-post::before { background: var(--post); }
+[data-tema="etiquetas"] .g-cuota::before { background: var(--cuota); }
+[data-tema="etiquetas"] .g-fin::before { background: var(--fin); }
+[data-tema="etiquetas"] .g-cumple::before { background: var(--cumple); }
+[data-tema="etiquetas"] .aviso {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: start;
+  background: transparent; border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 12px 0;
+}
+[data-tema="etiquetas"] .grupo + .aviso { border-top: 0; }
+[data-tema="etiquetas"] .aviso .aviso-top { grid-column: 1; gap: 12px; }
+[data-tema="etiquetas"] .aviso h2 { font: 700 18px/1.2 var(--serif); }
+[data-tema="etiquetas"] .aviso .motivo { font-size: 15px; font-weight: 600; }
+[data-tema="etiquetas"] .aviso .etiqueta { display: none; }
+[data-tema="etiquetas"] .aviso .det-txt { display: none; }
+[data-tema="etiquetas"] .aviso .detalle { margin-top: 4px; }
+[data-tema="etiquetas"] .aviso .msg {
+  grid-column: 1 / -1; margin: 6px 0 0 56px; padding: 0; background: transparent; border-radius: 0;
+  font-size: 14px; color: var(--muted); -webkit-line-clamp: 1;
+}
+[data-tema="etiquetas"] .aviso .aviso-acts { grid-column: 2; grid-row: 1; margin: 0; flex-direction: column; gap: 6px; }
+[data-tema="etiquetas"] .aviso .aviso-acts .btn.big { width: auto; min-height: 44px; padding: 0 14px; font-size: 15px; }
+[data-tema="etiquetas"] .aviso .aviso-acts .btn.icon { width: auto; min-height: 36px; border-color: transparent; background: transparent; }
+[data-tema="etiquetas"] .aviso .aviso-acts .btn.icon svg { width: 20px; height: 20px; }
+[data-tema="etiquetas"] .aviso.compacto { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; background: var(--paper); }
+[data-tema="etiquetas"] .aviso.compacto .msg { margin-left: 0; -webkit-line-clamp: 3; }
+[data-tema="etiquetas"] .aviso.compacto .etiqueta { display: inline-flex; }
+
+/* cuotas como casilleros */
+[data-tema="etiquetas"] .segmentos { display: flex; flex-wrap: wrap; gap: 3px; margin: 6px 0 2px; }
+[data-tema="etiquetas"] .segmentos i { width: 12px; height: 8px; border-radius: 2px; background: var(--track); }
+[data-tema="etiquetas"] .segmentos i.si { background: var(--cuota); }
+
+[data-tema="etiquetas"] .chip, [data-tema="etiquetas"] .chip-in span { border-radius: 8px; }
+[data-tema="etiquetas"] .chip.quieto { border-radius: 5px; }
+[data-tema="etiquetas"] .cli { min-height: 64px; }
+[data-tema="etiquetas"] .muestra { transform: none; }
+[data-tema="etiquetas"] .muestra .etiqueta { display: inline-flex; }
+[data-tema="etiquetas"] .tabs { gap: 6px; padding-top: 8px; }
+[data-tema="etiquetas"] .tab { border-radius: 12px; }
+[data-tema="etiquetas"] .tab.on { background: var(--chip); }
+[data-tema="etiquetas"] .tab.on svg { color: var(--ink); }
+[data-tema="etiquetas"] .historial { border-left-width: 3px; }
+
+@media (prefers-color-scheme: dark) {
+  [data-tema="etiquetas"] {
+    --bg: #0f1626; --paper: #172036; --ink: #eef2f8; --muted: #a8b2c3; --line: #2a3550;
+    --basil: #3cc28f; --basil-2: #5ed3a4; --on-basil: #062016; --saffron: #f5c842; --saffron-soft: #3a3216;
+    --track: #2a3550; --chip: #1f2a42; --focus: #5ab0f0; --danger: #ff8a93;
+    --seg-bg: #183553; --seg-tx: #cfe6fb; --volver-bg: #2c2350; --volver-tx: #e2d9fb; --post-bg: #173a2a; --post-tx: #cdeedd;
+    --cuota-bg: #3a3216; --cuota-tx: #fbe9b0; --fin-bg: #402814; --fin-tx: #fcd9bb; --quieto-bg: #262f43; --quieto-tx: #d5dbe5;
+    --cumple-bg: #431f33; --cumple-tx: #fbd3e5;
+  }
+}
+
+/* ================= Cuaderno ================= */
+[data-tema="cuaderno"] {
+  --bg: #fcfcf8; --paper: #ffffff; --ink: #1e2a55; --muted: #555e77; --line: #d5dae6;
+  --basil: #ffe15a; --basil-2: #ffd52e; --on-basil: #1e2a55; --saffron: #c0392b; --saffron-soft: #f9e1de;
+  --track: #cbd2e0; --chip: #f1f3f8; --focus: #c0392b; --danger: #b03a2e;
+  --r-card: 4px; --r-ctl: 6px;
+  --serif: "Kalam", "Segoe Print", "Comic Sans MS", cursive; --sans: "Literata", Georgia, serif;
+  --renglon: rgba(64, 110, 190, .16); --margen: rgba(214, 88, 76, .5);
+}
+.estilo-muestra[data-tema="cuaderno"] { background: repeating-linear-gradient(to bottom, transparent 0 13px, var(--renglon) 13px 14px), var(--bg); }
+.estilo-muestra[data-tema="cuaderno"] .em-titulo { font-weight: 700; font-size: 17px; }
+.estilo-muestra[data-tema="cuaderno"] .em-tag { width: 10px; height: 10px; border-radius: 50%; background: transparent; border: 1.5px solid var(--ink); }
+.estilo-muestra[data-tema="cuaderno"] .em-tag.b { background: transparent; }
+
+html[data-tema="cuaderno"] body {
+  font-size: 19px; line-height: 1.55;
+  background-color: var(--bg);
+  background-image: linear-gradient(to right, transparent 25px, var(--margen) 25px 27px, transparent 27px),
+    repeating-linear-gradient(to bottom, transparent 0 33px, var(--renglon) 33px 34px);
+  background-attachment: local;
+}
+html[data-tema="cuaderno"] #app { padding-left: 40px; }
+[data-tema="cuaderno"] .perilla, [data-tema="cuaderno"] .inicial { display: none; }
+[data-tema="cuaderno"] .brand b { font: 700 27px/1 var(--serif); }
+[data-tema="cuaderno"] .fecha { font: 400 20px/1.2 var(--serif); color: var(--saffron); }
+[data-tema="cuaderno"] .titulo { font: 700 36px/1.05 var(--serif); letter-spacing: 0; }
+[data-tema="cuaderno"] .titulo.chico { font-size: 30px; }
+[data-tema="cuaderno"] .login h1 { font: 700 44px/1 var(--serif); letter-spacing: 0; }
+[data-tema="cuaderno"] .sub, [data-tema="cuaderno"] .panel > h2, [data-tema="cuaderno"] .form h2, [data-tema="cuaderno"] .quien,
+[data-tema="cuaderno"] .vacio h1, [data-tema="cuaderno"] .paso b, [data-tema="cuaderno"] .muestra b, [data-tema="cuaderno"] .mov-prod,
+[data-tema="cuaderno"] .nums dd { font-family: var(--serif); font-weight: 700; letter-spacing: 0; }
+[data-tema="cuaderno"] .hint, [data-tema="cuaderno"] .lead { font-size: 17px; }
+
+/* Hoy: renglones de una lista para tachar, sin tarjetas */
+[data-tema="cuaderno"] .avisos { gap: 6px; }
+[data-tema="cuaderno"] .aviso {
+  display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 0 12px;
+  background: transparent; border: 0; border-radius: 0; padding: 6px 0 22px; border-bottom: 1.5px dashed var(--line);
+}
+[data-tema="cuaderno"] .aviso > :not(.tilde) { grid-column: 2; }
+[data-tema="cuaderno"] .tilde {
+  display: block; grid-column: 1; grid-row: 1 / span 3; width: 34px; height: 34px; margin-top: 6px;
+  border: 2.5px solid var(--ink); border-radius: 52% 46% 55% 44% / 48% 55% 45% 52%; background: transparent; cursor: pointer; padding: 0;
+}
+[data-tema="cuaderno"] .tilde:hover, [data-tema="cuaderno"] .tilde:focus-visible {
+  background: no-repeat center / 22px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 13l5 5L20 6' fill='none' stroke='%23c0392b' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+[data-tema="cuaderno"] .aviso-top { gap: 0; }
+[data-tema="cuaderno"] .etiqueta { display: inline-block; font: 400 17px/1.2 var(--serif); color: var(--saffron); }
+[data-tema="cuaderno"] .aviso h2 { font: 700 27px/1.1 var(--serif); }
+[data-tema="cuaderno"] .aviso .motivo { font-size: 18px; font-weight: 600; }
+[data-tema="cuaderno"] .aviso .detalle { font-size: 16px; }
+[data-tema="cuaderno"] .aviso .msg {
+  background: transparent; border-radius: 0; border-left: 4px solid var(--basil); padding: 2px 0 2px 12px; margin-top: 10px;
+  font-size: 17px; font-style: italic; color: var(--ink);
+}
+[data-tema="cuaderno"] .aviso-acts .btn.wa { font: 700 22px/1 var(--serif); transform: rotate(-.6deg); border: 0; box-shadow: 0 2px 0 rgba(30, 42, 85, .25); }
+[data-tema="cuaderno"] .aviso.compacto { grid-template-columns: minmax(0, 1fr); border: 1.5px solid var(--line); padding: 12px 14px; background: var(--paper); }
+[data-tema="cuaderno"] .aviso.compacto .tilde { display: none; }
+[data-tema="cuaderno"] .aviso.compacto > * { grid-column: 1; }
+
+/* cuotas como casilleros tachados con birome roja */
+[data-tema="cuaderno"] .segmentos { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0 2px; }
+[data-tema="cuaderno"] .segmentos i { width: 17px; height: 17px; border: 1.5px solid var(--ink); border-radius: 2px; }
+[data-tema="cuaderno"] .segmentos i.si {
+  background: linear-gradient(45deg, transparent 42%, var(--saffron) 42% 58%, transparent 58%),
+    linear-gradient(-45deg, transparent 42%, var(--saffron) 42% 58%, transparent 58%);
+}
+
+[data-tema="cuaderno"] .btn { border-width: 2px; border-color: var(--ink); background: transparent; font-weight: 600; }
+[data-tema="cuaderno"] .btn.wa, [data-tema="cuaderno"] .btn.primary { border-color: transparent; }
+[data-tema="cuaderno"] .btn.primary { background: var(--ink); color: var(--bg); }
+[data-tema="cuaderno"] .btn.wa { background: var(--basil); color: var(--on-basil); }
+[data-tema="cuaderno"] .chip, [data-tema="cuaderno"] .chip-in span { border-radius: 4px; border: 1.5px solid var(--ink); background: transparent; }
+[data-tema="cuaderno"] .chip.on, [data-tema="cuaderno"] .chip-in input:checked + span { background: var(--basil); color: var(--on-basil); border-color: var(--ink); }
+[data-tema="cuaderno"] .chip.quieto { border: 0; background: var(--chip); }
+[data-tema="cuaderno"] .fld input, [data-tema="cuaderno"] .fld select, [data-tema="cuaderno"] .fld textarea, [data-tema="cuaderno"] .con-btn input,
+[data-tema="cuaderno"] .buscar {
+  border: 0; border-bottom: 2px solid var(--ink); border-radius: 0; background: transparent;
+}
+[data-tema="cuaderno"] .fld textarea { border: 2px solid var(--line); border-radius: 4px; }
+[data-tema="cuaderno"] .bloque, [data-tema="cuaderno"] .switch, [data-tema="cuaderno"] .card, [data-tema="cuaderno"] .paso, [data-tema="cuaderno"] .opt,
+[data-tema="cuaderno"] .estilo-op { background: var(--paper); border: 1.5px solid var(--line); box-shadow: 0 2px 0 var(--line); }
+[data-tema="cuaderno"] .cli { border-bottom: 1.5px dashed var(--line); }
+[data-tema="cuaderno"] .cli-txt b { font: 700 22px/1.15 var(--serif); }
+[data-tema="cuaderno"] .muestra { transform: rotate(-1.5deg); }
+[data-tema="cuaderno"] .muestra .tilde { display: block; flex: none; width: 30px; height: 30px; border: 2.5px solid var(--ink); border-radius: 52% 46% 55% 44% / 48% 55% 45% 52%; }
+[data-tema="cuaderno"] .muestra .etiqueta { display: block; }
+[data-tema="cuaderno"] .tabs { background: var(--bg); border-top: 2px solid var(--ink); }
+[data-tema="cuaderno"] .tab { font: 400 17px/1 var(--serif); }
+[data-tema="cuaderno"] .tab.on span { text-decoration: underline wavy var(--saffron) 2px; text-underline-offset: 5px; }
+[data-tema="cuaderno"] .tab.anotar { background: var(--basil); color: var(--on-basil); }
+[data-tema="cuaderno"] .panel { background-color: var(--bg); background-image: repeating-linear-gradient(to bottom, transparent 0 33px, var(--renglon) 33px 34px); }
+[data-tema="cuaderno"] .msg.grande { background: var(--paper); }
+[data-tema="cuaderno"] .ilustra { background: transparent; mix-blend-mode: multiply; max-width: 360px; margin-left: auto; margin-right: auto; }
+
+@media (prefers-color-scheme: dark) {
+  [data-tema="cuaderno"] {
+    --bg: #15161c; --paper: #1c1e26; --ink: #e9ecf6; --muted: #a9b0c2; --line: #2d3140;
+    --basil: #e8c93a; --basil-2: #f1d65a; --on-basil: #15161c; --saffron: #ff7a6b; --saffron-soft: #3a1f1c;
+    --track: #3a3f50; --chip: #20222b; --focus: #ff7a6b; --danger: #ff8a7f;
+    --renglon: rgba(140, 170, 230, .10); --margen: rgba(255, 120, 110, .35);
+  }
+  [data-tema="cuaderno"] .ilustra { mix-blend-mode: normal; filter: invert(.92) hue-rotate(180deg); }
+  [data-tema="cuaderno"] .aviso-acts .btn.wa { box-shadow: none; }
+}
+
+/* En Cuaderno el resaltador amarillo es fondo, nunca color de letra: links y detalles van en birome roja o azul */
+[data-tema="cuaderno"] a, [data-tema="cuaderno"] .link, [data-tema="cuaderno"] details.mas > summary { color: var(--saffron); }
+[data-tema="cuaderno"] .aviso-hoy, [data-tema="cuaderno"] .ok-msg { color: var(--saffron); }
+[data-tema="cuaderno"] .tab.on svg { color: var(--saffron); }
+[data-tema="cuaderno"] .btn.wa, [data-tema="cuaderno"] .tab.anotar, [data-tema="cuaderno"] a.btn { color: var(--on-basil); }
+[data-tema="cuaderno"] a.btn:not(.wa) { color: var(--ink); }
+[data-tema="cuaderno"] .cli { color: var(--ink); }
+[data-tema="cuaderno"] .imp-row input, [data-tema="cuaderno"] .switch input:checked { accent-color: var(--saffron); }
+[data-tema="etiquetas"] .segmentos i { width: 10px; }
+[data-tema="cuaderno"] .tab { color: var(--muted); }
+[data-tema="cuaderno"] .tab.on { color: var(--ink); }
+[data-tema="cuaderno"] .icon-btn { color: var(--ink); }
+
+/* El logo (la perilla 6 de 12) toma los colores de cada estilo */
+.logo .lg-bg { fill: #2a1f2d; }
+.logo .lg-track { stroke: #5a4a5e; }
+.logo .lg-fill { stroke: #e9a23b; }
+.logo .lg-dot { fill: #f6f1ea; }
+[data-tema="etiquetas"] .logo .lg-bg { fill: #15233f; }
+[data-tema="etiquetas"] .logo .lg-track { stroke: #3a4a6a; }
+[data-tema="etiquetas"] .logo .lg-fill { stroke: #e9b20e; }
+[data-tema="cuaderno"] .logo .lg-bg { fill: #1e2a55; }
+[data-tema="cuaderno"] .logo .lg-track { stroke: #44527f; }
+[data-tema="cuaderno"] .logo .lg-fill { stroke: #ffe15a; }
+
+/* La muestra de la pantalla de entrada: cada estilo enseña sus piezas */
+.muestra .inicial, .muestra .etiqueta, .muestra .tilde, .muestra .segmentos { display: none; }
+[data-tema="etiquetas"] .muestra .inicial { display: grid; }
+[data-tema="etiquetas"] .muestra .etiqueta { display: inline-flex; }
+[data-tema="etiquetas"] .muestra .segmentos, [data-tema="cuaderno"] .muestra .segmentos { display: flex; }
+[data-tema="cuaderno"] .muestra .etiqueta, [data-tema="cuaderno"] .muestra .tilde { display: block; }
+[data-tema="cuaderno"] .seg button { font-size: 16px; line-height: 1.2; }
+.elegir-estilo { margin: 0 0 18px; display: grid; gap: 10px; }
+.elegir-estilo .sub { margin: 0; }

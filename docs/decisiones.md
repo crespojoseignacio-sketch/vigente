@@ -78,6 +78,21 @@ Cuatro personajes leyeron la descripción de la app antes de construirla. Las re
 - **Escéptica:** miedo a perder los datos y a que WhatsApp bloquee el número. *Los datos viven en la base, no en el celular, y se pueden bajar en .csv. Los mensajes salen de a uno desde su WhatsApp y la app lo explica en Promos.*
 - **Clienta (compró en 12 cuotas):** le parece bien la postventa y un mensaje por mes; las promos seguidas la harían bloquear. *Se sumó un respiro: los avisos de venta no aparecen si le escribió en las 2 semanas anteriores, y Promos excluye por defecto a quien recibió una en los últimos 30 días.*
 
+## Tres estilos para elegir (24/10/2026)
+
+Pedido: arreglar la estética usando la IA local y pensando en los distintos roles, con más variedad que cambiar colores. En vez de retocar un solo diseño, la app trae **tres estilos que cambian letra, forma y densidad**, y cada emprendedora elige el suyo en **Ajustes → Estilo de la app** (queda guardado en ese celular).
+
+| Estilo | Para quién | Cómo se ve |
+|---|---|---|
+| **Recetario** | La que quiere algo cálido y prolijo | Azulejo y tinta berenjena, nombres en Young Serif, una tarjeta por persona con la perilla de las cuotas. |
+| **Etiquetas** | Naty: rápido, con una mano, muchos chats | Como las etiquetas de WhatsApp Business: un color por aviso (Seguimiento celeste, Cuotas amarillo, Postventa verde, Cumple rosa…), Hoy agrupado por etiqueta en una lista densa, iniciales en vez de perillas, cuotas como casilleros. Gabarito + Instrument Sans. |
+| **Cuaderno** | Graciela: anota en un cuaderno, usa anteojos | Hoja con renglones y margen rojo, letra base de 19 px (Literata), nombres a mano (Kalam), el botón de WhatsApp como resaltador amarillo, un círculo para tachar a quien ya le escribiste y las cuotas como casilleros tachados con birome roja. |
+
+- Las **ilustraciones** de Etiquetas y Cuaderno las generó la IA local de imágenes (KoboldCpp, desde `E:\claude-proyectos\imagenes\vigente`), no Claude. Recetario no lleva: su muestra es la tarjeta con la perilla.
+- El **logo** toma los colores de cada estilo.
+- Todos pasan contraste AA en claro y en oscuro (revisado con la fórmula de WCAG).
+- Técnicamente: las variables de color y letra van en `[data-tema]` (`src/temas.css`), así también se pintan las muestras de Ajustes. El HTML es el mismo; cada estilo muestra u oculta piezas (perilla, iniciales, etiqueta, casilleros, círculo para tachar).
+
 ## Qué se reusó
 
 - **De El Fijo (Pechera) y Partila:** la estructura (JavaScript sin frameworks, `build-web.mjs` con nombres por contenido, CSP en `vercel.json`, íconos generados con código), el estilo de pantallas con `data-act` y el aviso con «Deshacer».
