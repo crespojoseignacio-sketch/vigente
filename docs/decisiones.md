@@ -93,6 +93,30 @@ Pedido: arreglar la estética usando la IA local y pensando en los distintos rol
 - Todos pasan contraste AA en claro y en oscuro (revisado con la fórmula de WCAG).
 - Técnicamente: las variables de color y letra van en `[data-tema]` (`src/temas.css`), así también se pintan las muestras de Ajustes. El HTML es el mismo; cada estilo muestra u oculta piezas (perilla, iniciales, etiqueta, casilleros, círculo para tachar).
 
+## Revisión por roles con la IA local (25/10/2026)
+
+gemma4:26b miró capturas de la versión publicada (Hoy, Me consultaron y la ficha) desde cinco roles. Lotes `estilos-*` en `E:\claude-proyectos\lotes`.
+
+| Rol | Recetario | Etiquetas | Cuaderno |
+|---|---|---|---|
+| Naty | — | 8 | — |
+| Diseñadora | 7 | 7 | 7 |
+| Accesibilidad | 6 | 6 | 6 |
+| Escéptica | 6 | 7 | 6 |
+| Clienta (Laura) | 9 | 9 | 7 |
+
+Se aplicó lo que pidieron dos o más roles:
+- **El mensaje se lee mejor** (lo pidieron los cinco): 16 px con más interlineado; en Etiquetas pasa de una línea gris a dos líneas en color tinta. Se arregló de paso que en Recetario se asomaba cortada una cuarta línea.
+- **«Después» pasa a «Posponer»**, como la alarma de Android: Naty no entendía qué hacía. Texto y borde oscuros; en Etiquetas, 44 px de alto.
+- **Opciones de 48 px** de alto en los formularios (Naty, diseñadora, accesibilidad).
+- **«Anotar venta / consulta / mensaje» con un +**, para que se vean como botones (diseñadora).
+- **Seguimiento sin presión**: «¿Pudiste pensarlo?» pasa a «¿Te quedó alguna duda?» (la clienta, en dos estilos). Solo cambia el texto de fábrica; quien ya editó el suyo lo conserva.
+- **Gris secundario más oscuro** en los tres estilos: de entre 5,5 y 6,8 a 1 de contraste pasa a entre 7 y 8,2 a 1. Ya pasaba AA; accesibilidad pensaba en uso al sol y en mayores de 50.
+
+No se aplicó:
+- **La escéptica pide menos color, menos redondeo y menos emojis** porque «parece un juguete». Choca con la diseñadora («le falta personalidad») y con el pedido de que los estilos sean bien distintos. Para quien quiera algo sobrio están Recetario y Etiquetas; Cuaderno es el juguetón a propósito.
+- **«Le falta personalidad»** (diseñadora, en los tres): no propuso nada concreto más allá de lo aplicado.
+
 ## Qué se reusó
 
 - **De El Fijo (Pechera) y Partila:** la estructura (JavaScript sin frameworks, `build-web.mjs` con nombres por contenido, CSP en `vercel.json`, íconos generados con código), el estilo de pantallas con `data-act` y el aviso con «Deshacer».

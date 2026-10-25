@@ -25,7 +25,7 @@
 
 /* ================= Etiquetas ================= */
 [data-tema="etiquetas"] {
-  --bg: #f3f5f8; --paper: #ffffff; --ink: #15233f; --muted: #586378; --line: #dadfe7;
+  --bg: #f3f5f8; --paper: #ffffff; --ink: #15233f; --muted: #4a5468; --line: #dadfe7;
   --basil: #11795a; --basil-2: #0d6247; --on-basil: #ffffff; --saffron: #e9b20e; --saffron-soft: #fcefc4;
   --track: #dadfe7; --chip: #ecf0f5; --focus: #2f8fd8; --danger: #b4232f;
   --r-card: 14px; --r-ctl: 10px;
@@ -103,12 +103,12 @@
 [data-tema="etiquetas"] .aviso .det-txt { display: none; }
 [data-tema="etiquetas"] .aviso .detalle { margin-top: 4px; }
 [data-tema="etiquetas"] .aviso .msg {
-  grid-column: 1 / -1; margin: 6px 0 0 56px; padding: 0; background: transparent; border-radius: 0;
-  font-size: 14px; color: var(--muted); -webkit-line-clamp: 1;
+  grid-column: 1 / -1; margin: 6px 0 0 56px; padding: 0; border-block: 0; background: transparent; border-radius: 0;
+  font-size: 15px; line-height: 1.4; color: var(--ink); -webkit-line-clamp: 2;
 }
 [data-tema="etiquetas"] .aviso .aviso-acts { grid-column: 2; grid-row: 1; margin: 0; flex-direction: column; gap: 6px; }
 [data-tema="etiquetas"] .aviso .aviso-acts .btn.big { width: auto; min-height: 44px; padding: 0 14px; font-size: 15px; }
-[data-tema="etiquetas"] .aviso .aviso-acts .btn.posponer { min-height: 36px; padding: 0 10px; font-size: 14px; background: transparent; }
+[data-tema="etiquetas"] .aviso .aviso-acts .btn.posponer { min-height: 44px; padding: 0 10px; font-size: 14px; background: transparent; }
 [data-tema="etiquetas"] .aviso.compacto { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; background: var(--paper); }
 [data-tema="etiquetas"] .aviso.compacto .msg { margin-left: 0; -webkit-line-clamp: 3; }
 [data-tema="etiquetas"] .aviso.compacto .etiqueta { display: inline-flex; }
@@ -142,7 +142,7 @@
 
 /* ================= Cuaderno ================= */
 [data-tema="cuaderno"] {
-  --bg: #fcfcf8; --paper: #ffffff; --ink: #1e2a55; --muted: #555e77; --line: #d5dae6;
+  --bg: #fcfcf8; --paper: #ffffff; --ink: #1e2a55; --muted: #474f66; --line: #d5dae6;
   --basil: #ffe15a; --basil-2: #ffd52e; --on-basil: #1e2a55; --saffron: #c0392b; --saffron-soft: #f9e1de;
   --track: #cbd2e0; --chip: #f1f3f8; --focus: #c0392b; --danger: #b03a2e;
   --r-card: 4px; --r-ctl: 6px;
@@ -193,7 +193,7 @@ html[data-tema="cuaderno"] #app { padding-left: 40px; }
 [data-tema="cuaderno"] .aviso .motivo { font-size: 18px; font-weight: 600; }
 [data-tema="cuaderno"] .aviso .detalle { font-size: 16px; }
 [data-tema="cuaderno"] .aviso .msg {
-  background: transparent; border-radius: 0; border-left: 4px solid var(--basil); padding: 2px 0 2px 12px; margin-top: 10px;
+  background: transparent; border-radius: 0; border-block: 0; border-left: 4px solid var(--basil); padding: 2px 0 2px 12px; margin-top: 10px;
   font-size: 18px; font-style: normal; color: var(--ink);
 }
 [data-tema="cuaderno"] .aviso-acts .btn.wa { font: 700 22px/1 var(--serif); transform: rotate(-.6deg); border: 0; box-shadow: 0 2px 0 rgba(30, 42, 85, .25); }

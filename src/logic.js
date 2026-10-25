@@ -7,7 +7,7 @@ const DEFAULTS = {
   caracteristica: "11",
   dias: { seguimiento: 3, volver: 30, postventa: 10, quieto: 90 },
   plantillas: {
-    seguimiento: "¡Hola {nombre}! ¿Cómo estás? Te escribo por tu consulta[ de {producto}]. ¿Pudiste pensarlo? Si querés te paso precios y formas de pago 😊",
+    seguimiento: "¡Hola {nombre}! ¿Cómo estás? Te escribo por tu consulta[ de {producto}]. ¿Te quedó alguna duda? Si querés te paso precios y formas de pago 😊",
     volver: "¡Hola {nombre}! ¿Cómo va? Hace un tiempo me consultaste[ por {producto}]. Este mes hay novedades y opciones de pago, ¿te cuento?",
     postventa: "¡Hola {nombre}! ¿Cómo te va con tu {producto}? Si tenés alguna duda de uso, escribime. Y si te gustó, me ayudás un montón recomendándome 🙌",
     cuota: "¡Hola {nombre}! ¿Cómo estás? ¿Qué tal tu {producto}? Te cuento que hay promos nuevas, por si querés sumar otra pieza a tu cocina 😊",
@@ -299,7 +299,7 @@ function armar(a, c, movs, aj, hoy) {
   let titulo = "", detalle = "";
   const plantilla = PLANTILLA[a.tipo];
   if (a.tipo === "cumple") titulo = a.dia === hoy ? "Hoy cumple años" : a.dia === sumarDias(hoy, 1) ? "Mañana cumple años" : `Cumple el ${fechaCorta(a.dia, hoy)}`;
-  else if (a.tipo === "seg") { titulo = `Consultó ${hace(m.fecha, hoy)} y no compró`; detalle = "Buen momento para preguntarle si lo pensó."; }
+  else if (a.tipo === "seg") { titulo = `Consultó ${hace(m.fecha, hoy)} y no compró`; detalle = "Buen momento para preguntarle si le quedó alguna duda."; }
   else if (a.tipo === "volver") { titulo = `Consultó ${hace(m.fecha, hoy)} y no compró`; detalle = "Volvé a ofrecerle, con alguna novedad."; }
   else if (a.tipo === "post") { titulo = `Compró ${hace(m.fecha, hoy)}`; detalle = "Preguntale cómo le va y pedile una recomendación."; }
   else if (a.tipo === "cuota") { titulo = `Va por la cuota ${a.k} de ${a.n}`; detalle = "Aprox. Buen momento para ofrecerle otra pieza."; }

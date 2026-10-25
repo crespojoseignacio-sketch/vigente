@@ -4,7 +4,7 @@
   --bg: #e9efec;
   --paper: #ffffff;
   --ink: #2a1f2d;
-  --muted: #625866;
+  --muted: #564c5a;
   --line: #d3dcd8;
   --basil: #2e6a4f;
   --basil-2: #245a42;
@@ -140,15 +140,17 @@ p { margin: 0; }
 .motivo { font-weight: 600; margin-top: 2px; }
 .detalle { color: var(--muted); font-size: 15px; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .msg {
-  margin: 14px 0 0; padding: 12px 14px; border-radius: 4px 16px 16px 16px; background: var(--chip);
-  font-size: 15px; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  /* el aire de arriba y abajo va como borde transparente: si fuera padding, la 4.ª línea se asoma cortada debajo de las 3 que se muestran */
+  margin: 14px 0 0; padding: 0 14px; border-block: 12px solid transparent; border-radius: 4px 16px 16px 16px; background: var(--chip);
+  font-size: 16px; line-height: 1.45; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 .msg.grande { -webkit-line-clamp: unset; display: block; font-size: 17px; margin: 14px 0 18px; }
 .aviso-acts { display: flex; gap: 10px; margin-top: 14px; }
 .aviso-acts .btn.big { flex: 1; width: auto; }
-/* «Después» con palabra y separado del botón de WhatsApp: que no se toque uno por el otro (lo pidió Graciela en la revisión con la IA local) */
+/* «Posponer» con palabra y separado del botón de WhatsApp: que no se toque uno por el otro (lo pidió Graciela en la revisión con la IA local).
+   Dice «Posponer» como la alarma de Android: con «Después» Naty no entendía qué hacía. Texto y borde oscuros (accesibilidad). */
 .aviso-acts { gap: 14px; }
-.aviso-acts .btn.posponer { flex: none; min-height: 56px; padding: 0 14px; gap: 6px; font-size: 15px; color: var(--muted); }
+.aviso-acts .btn.posponer { flex: none; min-height: 56px; padding: 0 14px; gap: 6px; font-size: 15px; color: var(--ink); border-color: var(--muted); }
 .aviso-acts .btn.posponer svg { width: 20px; height: 20px; }
 /* El botón de guardar queda siempre a la vista en el panel, con la aclaración de que recién ahí se anota */
 .guardar { position: sticky; bottom: calc(-24px - env(safe-area-inset-bottom, 0)); margin: 4px -16px calc(-24px - env(safe-area-inset-bottom, 0)); padding: 10px 16px calc(14px + env(safe-area-inset-bottom, 0)); background: var(--bg); border-top: 1px solid var(--line); display: grid; gap: 8px; z-index: 1; }
@@ -203,7 +205,7 @@ details.bloque > summary { cursor: pointer; font-weight: 600; min-height: 32px; 
 .chip-in { position: relative; display: inline-flex; }
 .chip-in input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
 .chip-in span {
-  display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px;
+  display: inline-flex; align-items: center; min-height: 48px; padding: 0 16px; border-radius: 999px;
   border: 1.5px solid var(--line); background: var(--paper); font-weight: 600; font-size: 16px;
 }
 .chip-in input:checked + span { background: var(--ink); border-color: var(--ink); color: var(--paper); }
@@ -240,7 +242,8 @@ details.bloque > summary { cursor: pointer; font-weight: 600; min-height: 32px; 
 .ficha-aviso { margin: 18px 0 0; }
 .prox-ficha { margin: 14px 0 0; }
 .acciones { display: grid; gap: 8px; margin: 18px 0; }
-.acciones .btn { justify-content: flex-start; }
+.acciones .btn { justify-content: flex-start; gap: 10px; }
+.acciones .btn svg { width: 20px; height: 20px; flex: none; }
 .datos { margin: 0; display: grid; gap: 10px; }
 .datos div { display: grid; grid-template-columns: 116px 1fr; gap: 10px; align-items: baseline; }
 .datos dt { color: var(--muted); font-size: 15px; }

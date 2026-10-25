@@ -326,7 +326,7 @@ function avisoCard(a, compacto = false) {
       </div>
     </div>
     <p class="msg">${esc(a.mensaje)}</p>
-    <div class="aviso-acts">${wa}<button class="btn posponer" data-act="posponer" data-clave="${esc(a.clave)}" aria-label="Después: recordarme más tarde, ya le escribí o descartar">${ICON.reloj}<span>Después</span></button></div>
+    <div class="aviso-acts">${wa}<button class="btn posponer" data-act="posponer" data-clave="${esc(a.clave)}" aria-label="Posponer: recordarme más tarde, ya le escribí o descartar">${ICON.reloj}<span>Posponer</span></button></div>
   </article>`;
 }
 function numerosMes() {
@@ -403,9 +403,9 @@ function vistaFicha() {
       : `<button class="btn" data-act="editar" data-id="${esc(c.id)}">Agregar su teléfono</button>`}
     ${a ? `<div class="ficha-aviso">${avisoCard(a, true)}</div>` : p ? `<p class="hint prox-ficha">Próximo aviso, ${esc(cuando(p.desde, h).toLowerCase())}: ${esc(p.titulo)}.</p>` : ""}
     <div class="acciones">
-      <button class="btn" data-act="nueva-venta" data-id="${esc(c.id)}">Anotar venta</button>
-      <button class="btn" data-act="nueva-consulta" data-id="${esc(c.id)}">Anotar consulta</button>
-      <button class="btn" data-act="nueva-nota" data-id="${esc(c.id)}">Anotar mensaje o nota</button>
+      <button class="btn" data-act="nueva-venta" data-id="${esc(c.id)}">${ICON.mas}<span>Anotar venta</span></button>
+      <button class="btn" data-act="nueva-consulta" data-id="${esc(c.id)}">${ICON.mas}<span>Anotar consulta</span></button>
+      <button class="btn" data-act="nueva-nota" data-id="${esc(c.id)}">${ICON.mas}<span>Anotar mensaje o nota</span></button>
     </div>
     <dl class="datos">
       ${(c.intereses || []).length ? `<div><dt>Le interesa</dt><dd>${c.intereses.map(i => `<span class="chip quieto">${esc(i)}</span>`).join(" ")}</dd></div>` : ""}

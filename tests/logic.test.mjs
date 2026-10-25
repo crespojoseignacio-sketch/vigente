@@ -176,7 +176,7 @@ test('plantillas', () => {
   assert.equal(L.primerNombre('  laura bifera '), 'Laura');
   const sinProd = C('Ana');
   const r = hoyDe(S([sinProd], [M(sinProd, 'consulta', '2026-10-01')]), '2026-10-04');
-  assert.match(r.activos[0].mensaje, /Te escribo por tu consulta\. ¿Pudiste/, 'sin producto se saca el pedazo entre corchetes');
+  assert.match(r.activos[0].mensaje, /Te escribo por tu consulta\. ¿Te quedó/, 'sin producto se saca el pedazo entre corchetes');
   assert.equal(L.llenar('Hola[ {nombre}], ¿qué tal[ tu {producto}]?', { nombre: 'Ana', producto: '' }), 'Hola Ana, ¿qué tal?');
   assert.equal(L.llenar('[Corchete sin variable]', {}), 'Corchete sin variable');
   assert.equal(L.enFrase('Cacerola 24 + Bifera'), 'cacerola 24 y bifera');
