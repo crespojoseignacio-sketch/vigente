@@ -146,6 +146,13 @@ p { margin: 0; }
 .msg.grande { -webkit-line-clamp: unset; display: block; font-size: 17px; margin: 14px 0 18px; }
 .aviso-acts { display: flex; gap: 10px; margin-top: 14px; }
 .aviso-acts .btn.big { flex: 1; width: auto; }
+/* «Después» con palabra y separado del botón de WhatsApp: que no se toque uno por el otro (lo pidió Graciela en la revisión con la IA local) */
+.aviso-acts { gap: 14px; }
+.aviso-acts .btn.posponer { flex: none; min-height: 56px; padding: 0 14px; gap: 6px; font-size: 15px; color: var(--muted); }
+.aviso-acts .btn.posponer svg { width: 20px; height: 20px; }
+/* El botón de guardar queda siempre a la vista en el panel, con la aclaración de que recién ahí se anota */
+.guardar { position: sticky; bottom: calc(-24px - env(safe-area-inset-bottom, 0)); margin: 4px -16px calc(-24px - env(safe-area-inset-bottom, 0)); padding: 10px 16px calc(14px + env(safe-area-inset-bottom, 0)); background: var(--bg); border-top: 1px solid var(--line); display: grid; gap: 8px; z-index: 1; }
+.guardar .hint { margin: 0; font-size: 14px; }
 
 .bienvenida { display: grid; gap: 10px; margin-bottom: 18px; }
 .paso {

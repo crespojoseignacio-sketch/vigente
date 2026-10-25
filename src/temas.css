@@ -108,8 +108,7 @@
 }
 [data-tema="etiquetas"] .aviso .aviso-acts { grid-column: 2; grid-row: 1; margin: 0; flex-direction: column; gap: 6px; }
 [data-tema="etiquetas"] .aviso .aviso-acts .btn.big { width: auto; min-height: 44px; padding: 0 14px; font-size: 15px; }
-[data-tema="etiquetas"] .aviso .aviso-acts .btn.icon { width: auto; min-height: 36px; border-color: transparent; background: transparent; }
-[data-tema="etiquetas"] .aviso .aviso-acts .btn.icon svg { width: 20px; height: 20px; }
+[data-tema="etiquetas"] .aviso .aviso-acts .btn.posponer { min-height: 36px; padding: 0 10px; font-size: 14px; background: transparent; }
 [data-tema="etiquetas"] .aviso.compacto { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; background: var(--paper); }
 [data-tema="etiquetas"] .aviso.compacto .msg { margin-left: 0; -webkit-line-clamp: 3; }
 [data-tema="etiquetas"] .aviso.compacto .etiqueta { display: inline-flex; }
@@ -195,7 +194,7 @@ html[data-tema="cuaderno"] #app { padding-left: 40px; }
 [data-tema="cuaderno"] .aviso .detalle { font-size: 16px; }
 [data-tema="cuaderno"] .aviso .msg {
   background: transparent; border-radius: 0; border-left: 4px solid var(--basil); padding: 2px 0 2px 12px; margin-top: 10px;
-  font-size: 17px; font-style: italic; color: var(--ink);
+  font-size: 18px; font-style: normal; color: var(--ink);
 }
 [data-tema="cuaderno"] .aviso-acts .btn.wa { font: 700 22px/1 var(--serif); transform: rotate(-.6deg); border: 0; box-shadow: 0 2px 0 rgba(30, 42, 85, .25); }
 [data-tema="cuaderno"] .aviso.compacto { grid-template-columns: minmax(0, 1fr); border: 1.5px solid var(--line); padding: 12px 14px; background: var(--paper); }
@@ -215,6 +214,9 @@ html[data-tema="cuaderno"] #app { padding-left: 40px; }
 [data-tema="cuaderno"] .btn.primary { background: var(--ink); color: var(--bg); }
 [data-tema="cuaderno"] .btn.wa { background: var(--basil); color: var(--on-basil); }
 [data-tema="cuaderno"] .chip, [data-tema="cuaderno"] .chip-in span { border-radius: 4px; border: 1.5px solid var(--ink); background: transparent; }
+/* Cuaderno: opciones más grandes y separadas, para no tocar la que no es */
+[data-tema="cuaderno"] .chip-in span { min-height: 52px; padding: 0 18px; font-size: 18px; }
+[data-tema="cuaderno"] .chips { gap: 10px; }
 [data-tema="cuaderno"] .chip.on, [data-tema="cuaderno"] .chip-in input:checked + span { background: var(--basil); color: var(--on-basil); border-color: var(--ink); }
 [data-tema="cuaderno"] .chip.quieto { border: 0; background: var(--chip); }
 [data-tema="cuaderno"] .fld input, [data-tema="cuaderno"] .fld select, [data-tema="cuaderno"] .fld textarea, [data-tema="cuaderno"] .con-btn input,

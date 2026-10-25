@@ -326,7 +326,7 @@ function avisoCard(a, compacto = false) {
       </div>
     </div>
     <p class="msg">${esc(a.mensaje)}</p>
-    <div class="aviso-acts">${wa}<button class="btn icon" data-act="posponer" data-clave="${esc(a.clave)}" aria-label="Más tarde, ya le escribí o descartar">${ICON.reloj}</button></div>
+    <div class="aviso-acts">${wa}<button class="btn posponer" data-act="posponer" data-clave="${esc(a.clave)}" aria-label="Después: recordarme más tarde, ya le escribí o descartar">${ICON.reloj}<span>Después</span></button></div>
   </article>`;
 }
 function numerosMes() {
@@ -462,7 +462,7 @@ function abrirConsulta(pref) {
     <details class="mas"><summary>Fecha y nota</summary>
       <label class="fld"><span>¿Cuándo?</span>${fechaInput("fecha")}</label>
       <label class="fld"><span>Nota</span><textarea name="detalle" maxlength="1000" rows="3" placeholder="Lo que preguntó, si quiere cuotas…"></textarea></label></details>
-    <button class="btn primary big" type="submit">Guardar consulta</button>
+    <div class="guardar"><p class="hint">Lo que marcaste queda anotado cuando tocás «Guardar consulta».</p><button class="btn primary big" type="submit">Guardar consulta</button></div>
   </form>`, { label: "Anotar una consulta" });
 }
 function abrirVenta(pref) {
@@ -482,7 +482,7 @@ function abrirVenta(pref) {
     <details class="mas"><summary>Agregar una nota</summary>
       <label class="fld"><span>Nota</span><textarea name="detalle" maxlength="1000" rows="3" placeholder="Entrega, color, lo que haga falta"></textarea></label></details>
     <p class="hint">Nunca anotes el número de la tarjeta: con el medio y las cuotas alcanza.</p>
-    <button class="btn primary big" type="submit">Guardar venta</button>
+    <div class="guardar"><p class="hint">Lo que marcaste queda anotado cuando tocás «Guardar venta».</p><button class="btn primary big" type="submit">Guardar venta</button></div>
   </form>`, { label: "Anotar una venta" });
 }
 function abrirNota(c) {
