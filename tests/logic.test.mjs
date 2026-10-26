@@ -306,3 +306,52 @@ test('situación para la lista', () => {
   assert.equal(L.situacion(a, [], '2026-10-19').estado, 'contacto');
   assert.equal(L.situacion(a, [M(a, 'consulta', '2026-10-16')], '2026-10-19').texto, 'Consultó hace 3 días');
 });
+
+// ---------- productos: catálogo y búsqueda ----------
+const ESSEN = L.CATALOGOS.essen.piezas;
+test('catálogo Essen: sin combos, sin repetidos y con nombres que entran en la base', () => {
+  assert.equal(L.productosUnicos(ESSEN).length, ESSEN.length);
+  assert.ok(ESSEN.every(p => p.length <= 40 && !/combo|\+/i.test(p)));
+  assert.ok(L.CATALOGOS.essen.inicio.every(p => ESSEN.includes(p)));
+});
+test('claveProd: tildes, mayúsculas, cm pegado y palabras de relleno', () => {
+  assert.equal(L.claveProd('Sartén 24cm'), 'sarten 24');
+  assert.equal(L.claveProd('cacerola24'), 'cacerola 24');
+  assert.equal(L.claveProd('  CACEROLA de 24 cm '), 'cacerola 24');
+  assert.equal(L.claveProd('Flip 2,2'), 'flip 2.2');
+  assert.equal(L.claveProd('Tabla bifaz 30x30'), 'tabla bifaz 30 x 30');
+});
+test('buscar mientras escribe: «cac» trae las cacerolas y «cacerola 2» las de 2…', () => {
+  assert.deepEqual(L.buscarProductos('cac', ESSEN).slice(0, 3), ['Cacerola 18', 'Cacerola 24', 'Cacerola 28']);
+  assert.ok(L.buscarProductos('cac', ESSEN).every(p => p.startsWith('Cacerola')));
+  assert.deepEqual(L.buscarProductos('cacerola 2', ESSEN), ['Cacerola 24', 'Cacerola 28', 'Cacerola cuadrada 29']);
+  assert.deepEqual(L.buscarProductos('caser', ESSEN).slice(0, 1), ['Cacerola 18']);
+  assert.deepEqual(L.buscarProductos('savarin 2', ESSEN), ['Savarín 24', 'Savarín 28']);
+  assert.deepEqual(L.buscarProductos('', ESSEN), []);
+});
+test('resolver lo escrito: errores de tipeo y medidas van a la pieza correcta', () => {
+  const uno = t => { const r = L.resolverProducto(t, ESSEN); assert.equal(r.tipo, 'uno', t); return r.valor; };
+  assert.equal(uno('caserola 24'), 'Cacerola 24');
+  assert.equal(uno('Cacerola 24cm'), 'Cacerola 24');
+  assert.equal(uno('cacerolas 24'), 'Cacerola 24');
+  assert.equal(uno('sarten 28'), 'Sartén 28');
+  assert.equal(uno('Bifera'), 'Bifera');
+  assert.equal(uno('wok'), 'Wok 30');
+  assert.equal(uno('savarin de 18'), 'Savarín 18');
+  assert.equal(uno('paellera'), 'Sartén 31 paellera');
+});
+test('resolver: si hay varias parecidas pide elegir; si no hay ninguna es un producto nuevo', () => {
+  assert.equal(L.resolverProducto('cacerola', ESSEN).tipo, 'varios');
+  assert.equal(L.resolverProducto('cac', ESSEN).tipo, 'varios');
+  assert.deepEqual(L.resolverProducto('flip', ESSEN).opciones, ['Flip 2.2', 'Flip Nuit 24']);
+  assert.deepEqual(L.resolverProducto('pava eléctrica', ESSEN), { tipo: 'nuevo', valor: 'Pava eléctrica' });
+  assert.deepEqual(L.resolverProducto('cacerola 22', ESSEN).opciones.slice(0, 3), ['Cacerola 18', 'Cacerola 24', 'Cacerola 28']);
+  assert.equal(L.resolverProducto('cacerola 22 terra', ESSEN).tipo, 'nuevo');
+  assert.deepEqual(L.resolverProducto('  ', ESSEN), { tipo: 'vacio' });
+});
+test('resolver con la lista propia: gana como la escribió ella', () => {
+  const suyos = ['Cacerola 24 Terra', 'Bifera'];
+  assert.equal(L.resolverProducto('cacerola 24 terra', [...suyos, ...ESSEN]).valor, 'Cacerola 24 Terra');
+  assert.equal(L.resolverProducto('biferA', [...suyos, ...ESSEN]).valor, 'Bifera');
+  assert.equal(L.resolverProducto('Bifera', ['Bifera', 'bifera ']).valor, 'Bifera');
+});

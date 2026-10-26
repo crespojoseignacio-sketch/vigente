@@ -10,7 +10,7 @@
 4. **Promos:** elegir a quiénes (por producto, si compró, cuotas en curso, sin promo en los últimos días), escribir el mensaje una vez y mandarlo de a uno desde el propio número.
 5. **Importar contactos:** de la agenda (Chrome en Android) o de un archivo .vcf/.csv. Si el contacto se llama «Laura bifera», sugiere el interés «Bifera».
 6. **Números del mes:** consultas, ventas, cuotas y de dónde vienen las ventas.
-7. **Ajustes:** productos, orígenes, días de cada aviso, textos de los mensajes, característica telefónica, **estilo de la app** (Recetario, Etiquetas o Cuaderno), descargar los datos, borrar todo.
+7. **Ajustes:** productos (con catálogo de Essen opcional y un buscador que perdona errores de tipeo), orígenes, días de cada aviso, textos de los mensajes, característica telefónica, **estilo de la app** (Recetario, Etiquetas o Cuaderno), descargar los datos, borrar todo.
 
 Por qué está hecha así: `docs/decisiones.md`.
 

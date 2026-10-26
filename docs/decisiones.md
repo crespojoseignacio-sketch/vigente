@@ -133,3 +133,17 @@ Naty la usa una semana con sus consultas reales. Funciona si:
 4. Dice que no volvería a manejarse solo con las etiquetas.
 
 Si no carga datos, el problema es la carga (ver qué paso le pesa). Si carga pero no abre «Hoy», los avisos no le dicen nada nuevo (ajustar los días o los textos).
+
+## Catálogo y buscador de productos (26/10/2026)
+
+Naty propuso cargar el catálogo («solo las piezas sueltas, no combos»). El problema de fondo es el error al escribir: «Caserola 24» o «Cacerola 24cm» quedaban como productos distintos de «Cacerola 24», y la promo para la Cacerola 24 no les llegaba.
+
+- **«¿Qué le interesó?», «¿Qué compró?» y «Le interesa» tienen un buscador** en vez de «Otro producto». Arriba quedan sus botones (sus productos); al escribir aparecen las piezas que se parecen. Perdona tildes, mayúsculas, «cm» pegado y un error de letra («caserola» → Cacerola). Al tocar una, el buscador se vacía para la siguiente.
+- **Lo escrito sin tocar nada** se resuelve al guardar: si es una pieza conocida se guarda con su nombre bien escrito; si se parece a varias, pide tocar cuál; si no se parece a nada, es un producto nuevo y se suma a sus botones (como antes).
+- **Una medida que no existe** («Savarín 22») no se guarda como producto nuevo: muestra las medidas que hay para que elija.
+- **Catálogo de Essen opcional** (Ajustes → Catálogo, queda en ese celular). 73 piezas sueltas sacadas del «CATALOGO SP – Ciclo 10» del equipo (Canva), sin combos ni sets de varias piezas. No entra entero como botones (la base guarda hasta 40 y 73 botones no se tocan con una mano): las piezas del catálogo aparecen solo al buscar.
+- **Nombre = pieza + medida** («Cacerola 24»), decidido por José Ignacio. La línea o el color (Nuit, Cera Forte, Contemporánea, Fusión, Black, Rosa) van en la nota: si no, la Cacerola 24 queda partida en seis y el ranking y las promos no la juntan.
+- **Solo lo ve quien lo prende**, decidido por José Ignacio: la app sigue sin ser de Essen y las de otras marcas no ven sus piezas.
+- Si al prenderlo sus productos son los de ejemplo, se cambian por 8 piezas del catálogo (las que más se repiten en los combos del ciclo). *[Suposición: no sabemos cuáles vende más Naty; las cambia en «Tus productos».]*
+- Los combos cambian cada mes y van en el texto de Promos, no en la lista. Cuando salga una pieza nueva en el catálogo, hay que sumarla a `CATALOGOS` en `src/logic.js`.
+- Las reglas están en `src/logic.js` (`claveProd`, `buscarProductos`, `resolverProducto`) y tienen pruebas.

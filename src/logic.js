@@ -501,9 +501,95 @@ function csvMovimientos(state) {
 }
 const medioTexto = k => (MEDIOS.find(x => x[0] === k) || [k, k || ""])[1];
 
+// ---------- productos: catálogo y búsqueda que perdona errores ----------
+// Un catálogo es opcional y se prende en Ajustes. Piezas sueltas, sin combos (los combos cambian cada mes y van en Promos).
+// Cada pieza se nombra por pieza y medida («Cacerola 24»): la línea o el color van en la nota, así el ranking y las promos no se parten.
+const CATALOGOS = {
+  essen: {
+    nombre: "Essen",
+    fuente: "catálogo del equipo, ciclo 10",
+    piezas: [
+      "Cacerola 18", "Cacerola 24", "Cacerola 28", "Cacerola cuadrada 29",
+      "Sartén 18", "Sartén 24", "Sartén 28", "Sartén 31 paellera", "Sartén express 18",
+      "Bifera", "Bifera doble hornalla", "Plancha doble hornalla", "Flip 2.2", "Flip Nuit 24", "Wok 30", "Fuente rectangular 30",
+      "Savarín 18", "Savarín 24", "Savarín 28", "Jarrito Quick", "Kamado", "Disco Nuit", "Tapa grill para disco", "Anafe de inducción", "Robot Rein",
+      "Set de budineras", "Vaporizador", "Cestillo freidor", "Soporte para brasas", "Asas de silicona", "Libro de recetas",
+      "Cuchillo Utility", "Cuchillo Carving", "Cuchillo Chef", "Cuchillo Santoku", "Afilador de cuchillos", "Tabla bifaz 30x30", "Tabla bifaz 40x30",
+      "Vaso térmico", "Botella térmica", "Mate térmico", "Mate Neo", "Termo", "Bombilla",
+      "Set de utensilios x5", "Set espátula y batidor", "Set utensilios de carne", "Set utensilios de pastas", "Set utensilios de parrilla",
+      "Rallador fino", "Rallador medio", "Rallador grueso", "Rallador de cintas",
+      "Balanza", "Mandolina", "Rebanador de queso", "Cafetera italiana", "Set de tarros", "Centrifugador de vegetales", "Multiprocesador de vegetales",
+      "Abrelatas", "Pelador", "Corta pizza", "Rejilla de desmolde", "Estira masas", "Tarro medidor", "Set de bowls de acero", "Aceite de oliva",
+      "Salero y pimentero", "Molinillo", "Limpiador de acero", "Limpiador desengrasante", "Limpiador abrillantador",
+    ],
+    // Los botones con los que arranca quien prende el catálogo sin haber tocado sus productos (las piezas que más se repiten en los combos).
+    inicio: ["Cacerola 24", "Sartén 24", "Cacerola 18", "Flip 2.2", "Savarín 24", "Bifera", "Cacerola 28", "Wok 30"],
+  },
+};
+const RELLENO = new Set(["de", "del", "la", "el", "los", "las", "con", "para", "cm", "cms", "centimetros"]);
+// «Caserola 24cm» → «caserola 24»: sin tildes ni mayúsculas, números separados de las letras y sin palabras de relleno.
+function claveProd(s) {
+  return sinTildes(s).replace(/(\d),(\d)/g, "$1.$2").replace(/([a-zñ])(\d)/g, "$1 $2").replace(/(\d)([a-zñ])/g, "$1 $2")
+    .replace(/[^a-z0-9ñ.]+/g, " ").split(" ").map(w => w.replace(/^\.+|\.+$/g, "")).filter(w => w && !RELLENO.has(w)).join(" ");
+}
+function distancia(a, b) {
+  if (Math.abs(a.length - b.length) > 2) return 3;
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[b.length];
+}
+// ¿La palabra escrita (q) es esta palabra del producto (w)? Los números tienen que ser iguales; las palabras admiten un error
+// (dos si son largas), siempre que empiecen con la misma letra. Mientras escribe, la última palabra puede estar a medias.
+function palabraCoincide(q, w, aMedias) {
+  if (q === w || (aMedias && w.startsWith(q))) return true;
+  if (/^\d/.test(q) || /^\d/.test(w) || q[0] !== w[0] || q.length < 4) return false;
+  const tol = q.length >= 7 ? 2 : 1;
+  return distancia(q, w) <= tol || (aMedias && q.length < w.length && distancia(q, w.slice(0, q.length)) <= tol);
+}
+function productosUnicos(lista) {
+  const vistos = new Set(), out = [];
+  for (const p of lista || []) { const k = claveProd(p); if (k && !vistos.has(k)) { vistos.add(k); out.push(p); } }
+  return out;
+}
+// Productos de la lista que se parecen a lo escrito, los más parecidos primero.
+// mientras = true: está escribiendo (la última palabra puede estar a medias, «cac» trae las cacerolas).
+function buscarProductos(texto, lista, mientras = true) {
+  const q = claveProd(texto).split(" ").filter(Boolean);
+  if (!q.length) return [];
+  const out = [];
+  productosUnicos(lista).forEach((p, orden) => {
+    const w = claveProd(p).split(" ");
+    let exactas = 0;
+    const ok = q.every((t, i) => w.some(x => { const s = palabraCoincide(t, x, mientras && i === q.length - 1); if (s && t === x) exactas++; return s; }));
+    if (ok) out.push({ p, puntos: exactas * 10 + (palabraCoincide(q[0], w[0], mientras && q.length === 1) ? 5 : 0) - w.length, orden });
+  });
+  return out.sort((a, b) => b.puntos - a.puntos || a.orden - b.orden).map(x => x.p);
+}
+// Lo que escribió en «Buscá la pieza», ya terminado: una pieza conocida, varias posibles o un producto nuevo.
+function resolverProducto(texto, lista) {
+  const t = String(texto || "").trim().replace(/\s+/g, " ");
+  if (!claveProd(t)) return { tipo: "vacio" };
+  const igual = productosUnicos(lista).find(p => claveProd(p) === claveProd(t));
+  if (igual) return { tipo: "uno", valor: igual };
+  const hits = buscarProductos(t, lista, false);
+  if (hits.length === 1) return { tipo: "uno", valor: hits[0] };
+  if (hits.length > 1) return { tipo: "varios", opciones: hits };
+  const parecidos = buscarProductos(t, lista, true);
+  if (parecidos.length) return { tipo: "varios", opciones: parecidos };
+  // Una medida que no existe («cacerola 22») suele ser un error: que elija entre las medidas que hay.
+  const palabras = claveProd(t).split(" ").filter(w => !/^\d/.test(w)).join(" ");
+  const medidas = palabras && palabras !== claveProd(t) ? buscarProductos(palabras, lista, false) : [];
+  if (medidas.length) return { tipo: "varios", opciones: medidas };
+  return { tipo: "nuevo", valor: t.charAt(0).toUpperCase() + t.slice(1) };
+}
+
 if (typeof module !== "undefined") {
   module.exports = { DEFAULTS, MEDIOS, CUOTAS, CON_CUOTAS, TIPOS, PRIORIDAD, ESTADOS_PROMO, ajustesDe, hoyISO, okISO, sumarDias, diasEntre, sumarMeses, mesesEntre,
     fechaCorta, hace, proximoCumple, normalizarTel, formatearTel, linkWa, sinTildes, primerNombre, llenar, pareceTarjeta, plata, leerMonto,
     indice, situacion, hitos, cuotaActual, candidatos, avisos, segmento, resumenMes, parsearVCF, parsearCSV, sugerirIntereses, aImportar,
-    csvClientes, csvMovimientos, medioTexto, enFrase };
+    csvClientes, csvMovimientos, medioTexto, enFrase, CATALOGOS, claveProd, buscarProductos, resolverProducto, productosUnicos };
 }

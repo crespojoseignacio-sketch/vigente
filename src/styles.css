@@ -253,6 +253,7 @@ details.bloque > summary { cursor: pointer; font-weight: 600; min-height: 32px; 
 .switch input { appearance: none; flex: none; width: 50px; height: 30px; border-radius: 999px; background: var(--track); position: relative; margin: 2px 0 0; cursor: pointer; transition: background .15s; }
 .switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--paper); box-shadow: 0 1px 2px rgba(42, 31, 45, .3); transition: transform .15s; }
 .switch input:checked { background: var(--danger); }
+.switch.si input:checked { background: var(--basil); }
 .switch input:checked::after { transform: translateX(20px); }
 .switch b { display: block; }
 .switch small { display: block; color: var(--muted); font-size: 14px; }
@@ -286,6 +287,9 @@ details.bloque > summary { cursor: pointer; font-weight: 600; min-height: 32px; 
 fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 10px; min-width: 0; }
 legend { font-weight: 600; font-size: 15px; padding: 0; margin-bottom: 8px; }
 .otro { margin-top: 2px; }
+.prod-pick .buscar { min-height: 48px; margin: 2px 0 10px; }
+.prod-pick .prod-hint { margin: 8px 0 0; }
+.bloque.catalogo .switch { margin-top: 10px; }
 .otro > span:first-child { font-weight: 400; color: var(--muted); }
 details.mas > summary { cursor: pointer; font-weight: 600; color: var(--basil); min-height: 40px; display: flex; align-items: center; }
 details.mas[open] { display: grid; gap: 12px; }

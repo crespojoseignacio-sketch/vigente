@@ -35,6 +35,9 @@ const TEMAS = [
   ["cuaderno", "Cuaderno", "Hoja con renglones, letra más grande y un círculo para tachar a quien ya le escribiste."],
 ];
 const TEMA_DEF = "recetario";
+// Catálogo de productos (opcional): se prende en Ajustes y queda en ese celular, como el estilo.
+function catalogoActivo() { try { const k = localStorage.getItem("vigente.catalogo"); return CATALOGOS[k] ? k : ""; } catch (e) { return ""; } }
+const piezasCatalogo = () => (CATALOGOS[catalogoActivo()] || { piezas: [] }).piezas;
 // Estilos que tienen ilustración (hecha con la IA local de imágenes). Los demás no piden el archivo.
 const CON_ILUSTRA = new Set(["etiquetas", "cuaderno"]);
 const ilustra = () => { const t = document.documentElement.dataset.tema; return CON_ILUSTRA.has(t) ? `<img class="ilustra" src="/ilustra/${esc(t)}.webp" alt="" width="640" height="400" decoding="async" data-ilustra>` : ""; };
@@ -143,6 +146,7 @@ const errText = e => {
   if (c.startsWith("largo")) return "Hay un texto demasiado largo. Acortalo y probá de nuevo.";
   if (c === "bad_fecha") return "Revisá la fecha: no puede ser futura.";
   if (c === "bad_cuotas") return "Las cuotas van de 1 a 60.";
+  if (c === "elegi_pieza") return "Hay varias parecidas a lo que escribiste: tocá la que es.";
   if (c === "bad_monto") return "Revisá el monto.";
   if (c === "bad_cumple") return "Revisá el día del cumple.";
   if (c === "muchos") return "Son demasiadas etiquetas. Sacá alguna.";
@@ -440,6 +444,48 @@ function chipsCheck(name, opciones, marcadas, tipo = "checkbox") {
   const set = new Set((marcadas || []).map(lower));
   return opciones.map(o => `<label class="chip-in"><input type="${tipo}" name="${name}" value="${esc(o)}" ${set.has(lower(o)) ? "checked" : ""}><span>${esc(o)}</span></label>`).join("");
 }
+// Elegir productos: los suyos como botones y un buscador que trae los del catálogo y perdona errores de tipeo.
+function elegirProductos(legend, base, marcadas) {
+  const propios = productosUnicos([...base, ...(marcadas || [])]);
+  const ya = new Set(propios.map(claveProd));
+  const cat = piezasCatalogo().filter(p => !ya.has(claveProd(p)));
+  return `<fieldset class="prod-pick"><legend>${legend}</legend>
+    <label class="buscar">${ICON.buscar}<input type="search" name="otro" maxlength="40" autocomplete="off" enterkeyhint="done" data-in="prod-q" placeholder="${cat.length ? "Buscá la pieza" : "Buscá o escribí otro producto"}" aria-label="Buscar producto"></label>
+    <div class="chips">${chipsCheck("prod", propios, marcadas)}${cat.map(p => `<label class="chip-in" data-cat hidden><input type="checkbox" name="prod" value="${esc(p)}"><span>${esc(p)}</span></label>`).join("")}</div>
+    <p class="hint prod-hint" aria-live="polite" hidden></p></fieldset>`;
+}
+function filtrarProductos(box) {
+  const q = box.querySelector('[data-in="prod-q"]').value.trim();
+  const labels = [...box.querySelectorAll(".chips .chip-in")];
+  const hint = box.querySelector(".prod-hint");
+  const valor = l => l.querySelector("input").value;
+  if (!claveProd(q)) { labels.forEach(l => { l.hidden = l.hasAttribute("data-cat") && !l.querySelector("input").checked; }); hint.hidden = true; return; }
+  let hits = buscarProductos(q, labels.map(valor)).slice(0, 12), msg = "Tocá la que es.";
+  if (!hits.length) {
+    const r = resolverProducto(q, labels.map(valor));
+    if (r.tipo === "varios") { hits = r.opciones.slice(0, 12); msg = `No hay «${q}». ¿Es alguna de estas?`; }
+    else msg = `«${q}» no está en la lista: se anota como producto nuevo.`;
+  }
+  const k = new Set(hits.map(claveProd));
+  labels.forEach(l => { l.hidden = !l.querySelector("input").checked && !k.has(claveProd(valor(l))); });
+  hint.textContent = msg;
+  hint.hidden = false;
+}
+// Lo marcado más lo escrito en el buscador, con el nombre bien escrito. Si lo escrito se parece a varias y no tocó ninguna, pide elegir.
+function leerProductos(f) {
+  const marc = marcados(f, "prod");
+  const t = f.otro.value.trim();
+  sinTarjeta(t);
+  const r = resolverProducto(t, [...f.querySelectorAll('input[name="prod"]')].map(i => i.value));
+  if (r.tipo === "vacio") return { prods: marc, nuevo: "" };
+  if (r.tipo === "varios") {
+    const mk = new Set(marc.map(claveProd));
+    if (r.opciones.some(p => mk.has(claveProd(p)))) return { prods: marc, nuevo: "" };
+    filtrarProductos(f.otro.closest(".prod-pick"));
+    throw Object.assign(new Error("elegi_pieza"), { code: "elegi_pieza" });
+  }
+  return { prods: productosUnicos([...marc, r.valor]), nuevo: r.tipo === "nuevo" ? r.valor : "" };
+}
 const fechaInput = (name, val) => `<input type="date" name="${name}" value="${esc(val || hoy())}" max="${hoy()}" min="2000-01-01" required>`;
 function bloqueQuien(pref) {
   if (pref) return `<input type="hidden" name="cid" value="${esc(pref.id)}"><p class="quien">${esc(pref.nombre)}${pref.telefono ? ` <span>${esc(formatearTel(pref.telefono))}</span>` : ""}</p>`;
@@ -456,8 +502,7 @@ function abrirConsulta(pref) {
   openSheet(`<form class="form" data-form="consulta" novalidate>
     <h2>Me consultaron</h2>
     ${bloqueQuien(pref)}
-    <fieldset><legend>¿Qué le interesó?</legend><div class="chips">${chipsCheck("prod", prods, [])}</div>
-      <label class="fld otro"><span>Otro producto</span><input name="otro" maxlength="40" placeholder="Por ejemplo, Pava"></label></fieldset>
+    ${elegirProductos("¿Qué le interesó?", prods, [])}
     ${!pref || !pref.origen ? `<fieldset><legend>¿De dónde vino?</legend><div class="chips">${chipsCheck("origen", a.origenes, [], "radio")}</div></fieldset>` : ""}
     <details class="mas"><summary>Fecha y nota</summary>
       <label class="fld"><span>¿Cuándo?</span>${fechaInput("fecha")}</label>
@@ -471,8 +516,7 @@ function abrirVenta(pref) {
   openSheet(`<form class="form" data-form="venta" novalidate>
     <h2>Vendí</h2>
     ${bloqueQuien(pref)}
-    <fieldset><legend>¿Qué compró?</legend><div class="chips">${chipsCheck("prod", prods, [])}</div>
-      <label class="fld otro"><span>Otro producto</span><input name="otro" maxlength="40"></label></fieldset>
+    ${elegirProductos("¿Qué compró?", prods, [])}
     <fieldset><legend>¿Cómo pagó?</legend><div class="chips">${MEDIOS.map(([k, t]) => `<label class="chip-in"><input type="radio" name="medio" value="${k}" data-in="medio"><span>${t}</span></label>`).join("")}</div></fieldset>
     <fieldset class="cuotas" hidden><legend>¿En cuántas cuotas?</legend><div class="chips">${CUOTAS.map(n => `<label class="chip-in"><input type="radio" name="cuotas" value="${n}" data-in="cuotas" ${n === 12 ? "checked" : ""}><span>${n === 1 ? "1 pago" : n}</span></label>`).join("")}
       <label class="chip-in"><input type="radio" name="cuotas" value="otra" data-in="cuotas"><span>Otra</span></label></div>
@@ -540,28 +584,26 @@ const marcados = (f, name) => [...f.querySelectorAll(`input[name="${name}"]:chec
 function sinTarjeta(...textos) { if (textos.some(t => pareceTarjeta(t))) throw Object.assign(new Error("tarjeta"), { code: "tarjeta" }); }
 async function sumarProducto(nuevo) {
   const a = aj();
-  if (!nuevo || a.productos.some(p => lower(p) === lower(nuevo)) || a.productos.length >= 40) return;
+  if (!nuevo || a.productos.some(p => claveProd(p) === claveProd(nuevo)) || a.productos.length >= 40) return;
   await Store.guardarAjustes({ ...a, productos: [...a.productos, nuevo] });
 }
 const SUBMIT = {
   consulta: safe(async f => {
     const quien = leerQuien(f);
-    const otro = f.otro.value.trim();
-    const prods = [...marcados(f, "prod"), ...(otro ? [otro] : [])];
+    const { prods, nuevo } = leerProductos(f);
     const detalle = f.detalle.value.trim();
-    sinTarjeta(detalle, otro);
+    sinTarjeta(detalle);
     const origen = marcados(f, "origen")[0] || quien.origen || "";
     const r = await Store.registrar({ ...quien, intereses: [...(quien.intereses || []), ...prods], origen },
       { tipo: "consulta", fecha: f.fecha.value || hoy(), producto: prods.join(" + "), detalle });
-    if (otro) await sumarProducto(otro).catch(() => {});
+    if (nuevo) await sumarProducto(nuevo).catch(() => {});
     closeSheet();
     render();
     toast(r.yaEstaba ? `Sumé la consulta a ${r.cliente.nombre}.` : `Anotada la consulta de ${r.cliente.nombre}. Te aviso en ${aj().dias.seguimiento} días si no compró.`);
   }),
   venta: safe(async f => {
     const quien = leerQuien(f);
-    const otro = f.otro.value.trim();
-    const prods = [...marcados(f, "prod"), ...(otro ? [otro] : [])];
+    const { prods, nuevo } = leerProductos(f);
     const medio = marcados(f, "medio")[0] || "";
     let cuotas = null;
     if (CON_CUOTAS.has(medio)) {
@@ -572,9 +614,9 @@ const SUBMIT = {
     const monto = f.monto.value.trim() ? leerMonto(f.monto.value) : null;
     if (f.monto.value.trim() && monto == null) throw Object.assign(new Error("bad_monto"), { code: "bad_monto" });
     const detalle = f.detalle.value.trim();
-    sinTarjeta(detalle, otro, f.monto.value);
+    sinTarjeta(detalle, f.monto.value);
     const r = await Store.registrar(quien, { tipo: "venta", fecha: f.fecha.value || hoy(), producto: prods.join(" + "), medio, cuotas, monto, detalle });
-    if (otro) await sumarProducto(otro).catch(() => {});
+    if (nuevo) await sumarProducto(nuevo).catch(() => {});
     closeSheet();
     render();
     toast(cuotas >= 2 ? `Anotada la venta. Te aviso en la cuota ${hitos(cuotas)[0]} de ${cuotas}.` : `Anotada la venta a ${r.cliente.nombre}.`);
@@ -595,13 +637,13 @@ const SUBMIT = {
     const telefono = normalizarTel(rawTel, aj().caracteristica);
     if (rawTel && !telefono) throw Object.assign(new Error("bad_tel"), { code: "bad_tel" });
     const nota = f.nota.value.trim();
-    sinTarjeta(nota, f.otro.value);
-    const otro = f.otro.value.trim();
+    sinTarjeta(nota);
+    const { prods } = leerProductos(f);
     const dia = f.cdia.value, mes = f.cmes.value;
     if ((dia && !mes) || (!dia && mes)) throw Object.assign(new Error("bad_cumple"), { code: "bad_cumple" });
     const cumple = dia && mes ? `${pad(mes)}-${pad(dia)}` : null;
     if (cumple && !proximoCumple(cumple, hoy())) throw Object.assign(new Error("bad_cumple"), { code: "bad_cumple" });
-    await Store.guardarCliente({ id: c.id, nombre: f.nombre.value.trim(), telefono, intereses: [...marcados(f, "prod"), ...(otro ? [otro] : [])],
+    await Store.guardarCliente({ id: c.id, nombre: f.nombre.value.trim(), telefono, intereses: prods,
       origen: marcados(f, "origen")[0] || "", cumple, nota, sinPromos: f.sinPromos.checked });
     closeSheet();
     render();
@@ -618,8 +660,7 @@ function abrirEditar(c) {
     <label class="fld"><span>Teléfono</span><span class="con-btn"><input name="tel" inputmode="tel" value="${esc(c.telefono ? formatearTel(c.telefono) : "")}" data-in="tel-edit">
       ${navigator.clipboard && navigator.clipboard.readText ? `<button type="button" class="btn small" data-act="pegar">Pegar</button>` : ""}</span></label>
     <p class="hint tel-hint" aria-live="polite">${c.telefono ? `Para WhatsApp: ${esc(formatearTel(c.telefono))}` : "Sin teléfono no se le puede escribir desde la app."}</p>
-    <fieldset><legend>Le interesa</legend><div class="chips">${chipsCheck("prod", prods, c.intereses)}</div>
-      <label class="fld otro"><span>Otro</span><input name="otro" maxlength="40"></label></fieldset>
+    ${elegirProductos("Le interesa", prods, c.intereses)}
     <fieldset><legend>De dónde vino</legend><div class="chips">${chipsCheck("origen", [...new Set([...a.origenes, ...(c.origen ? [c.origen] : [])])], c.origen ? [c.origen] : [], "radio")}</div></fieldset>
     <fieldset><legend>Cumple <small>(si lo sabés)</small></legend><div class="fila">
       <label class="fld"><span>Día</span><select name="cdia"><option value=""></option>${Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}" ${cd === i + 1 ? "selected" : ""}>${i + 1}</option>`).join("")}</select></label>
@@ -750,7 +791,7 @@ function vistaAjustes() {
   const a = aj(), u = Store.auth.user();
   return `<header class="top"><a class="icon-btn" href="#/hoy" aria-label="Volver">${ICON.atras}</a><h1 class="titulo chico">Ajustes</h1></header>
   <form class="form ajustes" data-form="ajustes" novalidate>
-    <section><h2 class="sub">Tus productos</h2><p class="hint">Son como tus etiquetas de WhatsApp: aparecen para marcar qué le interesó a cada uno.</p>
+    <section><h2 class="sub">Tus productos</h2><p class="hint">Son como tus etiquetas de WhatsApp: aparecen como botones para marcar qué le interesó a cada uno. Lo que no esté acá lo encontrás con el buscador.</p>
       <div class="chips">${a.productos.map(p => `<span class="chip on edit">${esc(p)}<button type="button" data-act="aj-quitar" data-k="productos" data-v="${esc(p)}" aria-label="Quitar ${esc(p)}">${ICON.cerrar}</button></span>`).join("")}</div>
       <span class="con-btn"><input name="nuevoProducto" maxlength="40" placeholder="Agregar un producto" aria-label="Producto nuevo"><button type="button" class="btn small" data-act="aj-sumar" data-k="productos" data-f="nuevoProducto">Agregar</button></span></section>
     <section><h2 class="sub">De dónde vienen las consultas</h2>
@@ -770,6 +811,8 @@ function vistaAjustes() {
       <p class="hint">Con 11, «15 2345-6789» queda como +54 9 11 2345-6789.</p></section>
     <button class="btn primary big" type="submit">Guardar ajustes</button>
   </form>
+  <section class="bloque catalogo"><h2 class="sub">Catálogo</h2><p class="hint">Si lo prendés, al buscar una pieza te sugiere las del catálogo, siempre escritas igual. Queda guardado en este celular.</p>
+    ${Object.entries(CATALOGOS).map(([k, c]) => `<label class="switch si"><input type="checkbox" value="${k}" data-in="catalogo" ${catalogoActivo() === k ? "checked" : ""}><span><b>Catálogo de ${esc(c.nombre)}</b><small>${c.piezas.length} piezas sueltas, sin combos (${esc(c.fuente)}).</small></span></label>`).join("")}</section>
   <section class="bloque estilos"><h2 class="sub">Estilo de la app</h2><p class="hint">Queda guardado en este celular. Cambia cómo se ve, no lo que tenés cargado.</p>
     ${opcionesEstilo()}</section>
   <section class="bloque"><h2 class="sub">Tus datos</h2><p class="hint">Bajalos cada tanto: es tu copia, y se abren con Excel o Google Sheets.</p>
@@ -795,6 +838,19 @@ function bajar(nombre, texto) {
   a.href = url; a.download = nombre;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+// Prender o apagar el catálogo. Si nunca tocó sus productos, arranca con las piezas más comunes del catálogo en vez de los de ejemplo.
+async function cambiarCatalogo(k) {
+  try { if (k) localStorage.setItem("vigente.catalogo", k); else localStorage.removeItem("vigente.catalogo"); } catch (e) { /* sin almacenamiento: dura hasta cerrar */ }
+  const c = CATALOGOS[k], a = aj();
+  const deEjemplo = a.productos.join("|") === DEFAULTS.productos.join("|");
+  if (c && deEjemplo && !ajustesSucios && Store.state) {
+    try { await Store.guardarAjustes({ ...a, productos: c.inicio.slice() }); } catch (e) { toast(errText(e)); return; }
+    render();
+    toast(`Listo. Tus botones ahora son ${c.inicio.length} piezas de ${c.nombre}: las cambiás en «Tus productos».`);
+    return;
+  }
+  toast(c ? `Listo: al buscar te sugiere las piezas de ${c.nombre}.` : "Listo: el buscador usa solo tus productos.");
 }
 function leerFlag(k) { try { return localStorage.getItem("vigente." + k) === "1"; } catch (e) { return false; } }
 function ponerFlag(k) { try { localStorage.setItem("vigente." + k, "1"); } catch (e) { /* nada */ } }
@@ -1041,6 +1097,7 @@ document.addEventListener("input", e => {
   if (!k) return;
   if (k === "buscar") { clearTimeout(tBuscar); tBuscar = setTimeout(() => { S.q = el.value; S.limite = 80; const pos = el.selectionStart; render(); const n = $('[data-in="buscar"]'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } }, 160); }
   else if (k === "tel" || k === "nombre") buscarExistente(el.form, k);
+  else if (k === "prod-q") filtrarProductos(el.closest(".prod-pick"));
   else if (k === "tel-edit") { const h = el.form.querySelector(".tel-hint"); const n = normalizarTel(el.value, aj().caracteristica); h.textContent = !el.value.trim() ? "Sin teléfono no se le puede escribir desde la app." : n ? `Para WhatsApp: ${formatearTel(n)}` : "Revisá el número: así no lo entiende WhatsApp."; }
   else if (k === "medio") { const fs = el.form.querySelector(".cuotas"); fs.hidden = !CON_CUOTAS.has(el.value); }
   else if (k === "cuotas") { const o = el.form.querySelector(".cuotas-otra"); o.hidden = el.value !== "otra"; if (!o.hidden) o.querySelector("input").focus(); }
@@ -1048,10 +1105,17 @@ document.addEventListener("input", e => {
   else if (k === "p-nombre") S.promo.nombre = el.value;
   else if (k === "imp-q") { clearTimeout(tBuscar); tBuscar = setTimeout(() => { S.imp.q = el.value; const pos = el.selectionStart; render(); const n = $('[data-in="imp-q"]'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } }, 200); }
 });
+// Al tocar una pieza encontrada, el buscador se vacía y queda listo para la siguiente (la marcada sigue a la vista).
+document.addEventListener("change", e => {
+  const el = e.target, box = el.name === "prod" && el.checked && el.closest(".prod-pick");
+  const q = box && box.querySelector('[data-in="prod-q"]');
+  if (q && q.value) { q.value = ""; filtrarProductos(box); }
+});
 document.addEventListener("change", e => {
   const el = e.target, k = el.dataset && el.dataset.in;
   if (!k) return;
   if (k === "p-dias") { S.promo.sinPromoDias = Number(el.value); render(); }
+  else if (k === "catalogo") cambiarCatalogo(el.checked ? el.value : "");
   else if (k === "imp-check") { if (el.checked) S.imp.marcados.add(el.value); else S.imp.marcados.delete(el.value); const b = $('[data-act="imp-ok"]'); const n = S.imp.marcados.size; if (b) { b.disabled = !n; b.textContent = `Importar ${plural(n, "contacto", "contactos")}`; } }
   else if (k === "imp-archivo") {
     const file = el.files && el.files[0];
